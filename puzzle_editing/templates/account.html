@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Manage Account{% endblock %}
+{% block main %}
+
+{% if success %}
+<div class="success">Information successfully saved!</div>
+{% endif %}
+
+<div class="columns">
+	<div class="column is-three-quarters">
+
+	<form id="account" action='/account' method="post">
+		{% csrf_token %}
+		{{ form.non_field_errors }}
+
+		{% for field in form %}
+		<div class="columns">
+			  <div class="column is-one-quarter">
+				  <label class="label">{{ field.label }}</label>
+			  </div>
+			  <div class="column">
+				  <div class="control">
+					{{ field }}
+					{% if field.help_text %}
+					<p class="help">{{ field.help_text|safe }}</p>
+					{% endif %}
+					{{ field.errors }}
+				  </div>
+			  </div>
+		 </div>
+		{% endfor %}
+
+		<div class="columns">
+			<div class="column is-one-quarter">
+			</div>
+			<div class="column">
+				<input class="button is-primary" type="submit" value="Submit">
+			</div>
+		</div>
+	</form>
+	</div>
+
+	<div class="column">
+		<div class="box">
+			<h3>Discord</h3>
+			{% if user.discord_user_id %}
+				<form method="POST" action="/account/oauth2">
+				{% csrf_token %}
+				You're linked to our team Discord. Your username is <code>@{{ user.discord_username }}</code>.<br>
+				<input class="button is-small" type="submit" name="unlink-discord" value="Click to unlink">
+				</form>
+			{% else %}
+				<p class="warning">You haven't completely linked your Discord information, which means you may lose access to Discord channels for puzzles.</p>
+
+				<a class="btn is-info" href="/account/oauth2">Link your Discord account</a>.
+			{% endif %}
+		</div>
+
+		<div class="box">
+			Other stuff<br>
+			<a href="{% url 'password_change' %}">Change your password</a><br>
+			<a href="{% url 'logout' %}">Logout</a>
+		</div>
+
+	</div>
+</div>
+{% endblock %}

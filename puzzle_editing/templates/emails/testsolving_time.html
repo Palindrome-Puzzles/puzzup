@@ -1,0 +1,17 @@
+<h3><a href="{{ request.scheme }}://{{ request.get_host }}{% url 'puzzle' puzzle.id %}">{{ puzzle.spoiler_free_title }}</a> is Ready to be Testsolved!</h3>
+
+<p>Please do one of the following:</p>
+
+<p>
+	<b>1. Schedule a testsolve session yourself.</b>
+	<a href="{{ request.scheme }}://{{ request.get_host }}/process#testsolving">Here are the instructions</a>.
+</p>
+
+<p>
+	<b>2. Ask the Testsolve Coordinators to schedule it.</b>
+	To do that, forward this email to <a href="mailto:{{ tc_email }}">{{ tc_email }}</a>, and let them know you'd like some assistance. One of them of them will reach out add work with you to get your puzzle added to to the schedule.
+</p>
+
+<p>Good luck with your testing!</p>
+
+<p>(This email was sent to all people attached to {{ puzzle.spoiler_free_title }}, because {{ user.display_name }} set the status to <b>Ready to be Testsolved</b>.)</p>

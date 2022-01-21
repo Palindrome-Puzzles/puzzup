@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta charset="utf-8"/>
+</head>
+<body>
+
+<p>There are a few features of PuzzUp that are only accessible to admins/superusers.</p>
+
+<h2 id="makingyourselfasuperuser.">Making yourself a superuser.</h2>
+
+<pre><code>python manage.py createsuperuser
+</code></pre>
+
+<p>Now you have access to Django&#8217;s <code>/admin/</code> site. You can edit most aspects of the data freely. Wield your power wisely.</p>
+
+<h2 id="assigningeditors">Assigning editors</h2>
+
+<p>To make a user an <strong>editor</strong>, find them under &#8220;Users&#8221; and give them the &#8220;<strong>Can change round</strong>&#8221; permission.</p>
+
+<p>(There is no UI to do this outside of /admin, but you have to do this so few times that it&#8217;s not high priority.)</p>
+
+<h2 id="definingstatuses">Defining statuses</h2>
+
+<p>This can be done in <code>status.py</code>.</p>
+
+<h2 id="statussubscriptions">Status subscriptions</h2>
+
+<p>Each status subscription sends an email to a specific user whenever <em>any</em> puzzle enters a <em>specific</em> puzzle status.</p>
+
+<p>(These are also completely invisible on the main website, which is maybe something we should fix.)</p>
+
+<p>Some ways to use status subscriptions:</p>
+
+<ul>
+<li>Editors-in-chief who are in charge of assigning editors to puzzles when they need one can subscribe to the &#8220;Awaiting Editor&#8221; status. Then puzzle authors can set their puzzle to that status when they wanted an editor, and EICs will be notified.</li>
+<li>Similarly, the head factchecker and head copy editor can subscribe to the Needs Factcheck and Needs Copy Edits statuses</li>
+<li>For people who really wanted to testsolve puzzles, we gave them subscriptions to the Testsolving status so they would get an email whenever a puzzle entered testsolving.</li>
+</ul>
+
+<h2 id="sitesettings">Site settings</h2>
+
+<p>Finally, there are a few &#8220;Site settings&#8221; that just look at the values associated with specific hardcoded keys in the codebase, so that you can change them without changing the code.</p>
+
+<h2 id="postprodding">Postprodding</h2>
+
+<p>This note was in the User doc:</p>
+
+<p>PuzzUp allows you to upload a zip file and automatically push it to a Git repository, if you set that up. I&#8217;m not sure how it works, sorry.</p>
+
+</body>
+</html>
+

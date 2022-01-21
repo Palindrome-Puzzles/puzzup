@@ -1,0 +1,23 @@
+-   model: puzzle_editing.user
+    pk: 1
+    fields:
+        password: pbkdf2_sha256$216000$pMqJxyLBdksb$jstfVTF9bo33uxhUVsdpqdB2URCxo1PRapTGttSCmD4=
+        last_login: null
+        is_superuser: true
+        username: admin
+        first_name: ''
+        last_name: ''
+        email: admin@admin.biz
+        is_staff: true
+        is_active: true
+        date_joined: 2022-01-20 14:24:00.010216+00:00
+        discord_username: ''
+        discord_nickname: ''
+        discord_user_id: ''
+        avatar_url: ''
+        display_name: ''
+        credits_name: ''
+        bio: ''
+        enable_keyboard_shortcuts: false
+        groups: []
+        user_permissions: []

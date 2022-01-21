@@ -1,0 +1,500 @@
+{% extends "base.html" %}
+{% load user_list %}
+{% load comment_list %}
+{% load markdown %}
+
+{% block title %}{{ puzzle.spoiler_free_title }}{% endblock %}
+
+{% block bodyclass %}puzzle-page{% endblock %}
+
+{% block outer_main %}
+
+<h1 class="title">
+	{{ puzzle.spoilery_title }}
+	<a href="{% url 'puzzle_edit' puzzle.id %}" class="edit-link">Edit</a>
+</h1>
+<div class="tags has-addons">
+	<span class="tag is-dark is-medium">Status</span>
+	<span class="tag is-white is-medium">{{ puzzle.get_status_emoji }} {{ puzzle.get_status_display }}</span>
+</div>
+
+<div class="columns">
+	<div class="column is-one-third ">
+		<div class="box puzzle-sidebar">
+			<div class="block">
+				Currently active: <strong>{{ puzzle.get_blocker }}</strong>
+			</div>
+
+			<div class="block">
+				<h3>
+					People
+					<a href="{% url 'puzzle_people' puzzle.id %}" class="button is-small is-white">Edit</a>
+				</h3>
+				<div class="block">
+					<h5>Author{{ puzzle.authors|pluralize }}</h5>
+					{% user_list puzzle.authors linkify=True %}
+				</div>
+				<div class="block">
+					<h5>Editor{{ puzzle.editors|pluralize }}</h5>
+					{% user_list puzzle.editors %}
+				</div>
+				<div class="block">
+					<h5>Postprodder{{ puzzle.postprodders|pluralize }}</h5>
+					{% user_list puzzle.postprodders %}
+				</div>
+				<div class="block">
+					<h5>Factchecker{{ puzzle.factcheckers|pluralize }}</h5>
+					{% user_list puzzle.factcheckers %}
+				</div>
+				<div class="block">
+					<h5>Spoiled</h5>
+					{% user_list puzzle.spoiled %}
+				</div>
+
+				<div class='block'>
+					<details>
+						<summary>Unspoiled users</summary>
+						<p>{{ unspoiled|join:", " }}</p>
+						<p><input type="text" value="{{ unspoiled_emails }}" style="display: none;" id="emails">
+						<button type="submit" class="button is-small" onclick="navigator.clipboard.writeText($('#emails').val());">Copy unspoiled emails</button></p>
+					</details>
+				</div>
+
+				<div class="block">
+					<h5><a href="{% url 'puzzle_other_credits' puzzle.id %}">Other credits</a></h5>
+					{{ puzzle.other_credits.all|join:"; "|default:"(none)" }}
+				</div>
+
+				<button class="button is-small is-link is-light toggle-show" data-target="self-buttons" data-rehide="Hide buttons">One-click add/remove</button>
+
+				<form method="POST" class="hidden" id="self-buttons">
+					{% csrf_token %}
+					<div>
+						{% if is_author %}
+						<input type="submit" name="remove_author" class="button is-small is-white" value="Remove me as author">
+						{% else %}
+						<input type="submit" name="add_author" class="button is-small is-light" value="Add me as author">
+						{% endif %}
+					</div>
+					<div>
+						{% if is_editor %}
+						<input type="submit" name="remove_editor" value="Remove me as editor" class="button is-small is-white">
+						{% else %}
+						<input type="submit" name="add_editor" value="Add me as editor" class="button is-small is-light">
+						{% endif %}
+					</div>
+					<div>
+						{% if is_factchecker %}
+						<input type="submit" name="remove_factchecker" value="Remove me as factchecker" class="button is-small is-white">
+						{% else %}
+						<input type="submit" name="add_factchecker" value="Add me as factchecker" class="button is-small is-light">
+						{% endif %}
+					</div>
+					<div>
+						{% if is_postprodder %}
+						<input type="submit" name="remove_postprodder" value="Remove me as postprodder" class="button is-small is-white">
+						{% else %}
+						<input type="submit" name="add_postprodder" value="Add me as postprodder" class="button is-small is-light">
+						{% endif %}
+
+					</div>
+				</form>
+			</div>
+
+			<div class="block">
+				<h3>Support requests</h3>
+				<p>
+					{% for req in support_requests %}
+					<a href="{% url 'support_by_puzzle_id' puzzle.id req.team %}">{{ req.get_team_display }}</a><br>
+					{% endfor %}
+				</p>
+				<p>
+					<a class="button is-small is-link" href="{% url 'support_by_puzzle' puzzle.id %}">View & create requests</a>
+				</p>
+			</div>
+
+			<div class="block">
+				<h3>Priority</h3>
+				<form method="POST" id="change-priority">
+					{% csrf_token %}
+					<div class="select is-small">
+					{{ priority_form.priority }}
+					</div>
+					<input class="button is-small is-link" type="submit" name="change_priority" value="Change">
+				</form>
+			</div>
+
+
+			<h3>Move to next step</h3>
+
+			<form method="POST" id="change-status" class="hidden">
+				{% csrf_token %}
+				{% with puzzle.get_transitions as transitions %}
+				{% if transitions %}
+					{% for transition in puzzle.get_transitions %}
+						<button type="submit" class="button is-small is-fullwidth" name="change_status" value="{{ transition.status }}">{{ transition.description }}</button>
+						{# (send to {{ transition.status_display }}) #}
+					{% endfor %}
+				{% endif %}
+
+				<button type="button" class="toggle-show button is-link is-outlined is-small" data-target="all-statuses" data-rehide="Hide all status changes">Show all status changes</button>
+				<div id="all-statuses" class="hidden">
+					<h5>or change status to:</h5>
+					{% for status in all_statuses %}
+						<button type="submit" class="button is-small is-fullwidth" name="change_status" value="{{ status.value }}">
+							{{ status.emoji }} {{ status.display }}
+						</button>
+					{% endfor %}
+				</div>
+				{% endwith %}
+			</form>
+
+			<p>
+				<button class="button is-small is-link is-light toggle-show" data-target="change-status" data-rehide="Hide next steps">Show next steps</button>
+			</p>
+		</div>
+		<div class="block">
+			<a href="{% url 'puzzle_escape' puzzle.id %}">🏃 Escape this puzzle</a>
+		</div>
+	</div>
+
+	<div class="column">
+
+		<div class="box">
+			<h3>
+				Answers
+				<a href="{% url 'puzzle_answers' puzzle.id %}" class="button is-small is-light toggle-show">Edit</a>
+			</h3>
+			{% with puzzle.answers.all as answers %}
+			{% for answer in answers %}
+				<code>{{ answer.answer }}</code>
+				[in <a href="{% url "round" answer.round.id %}">{{ answer.round }}</a>]
+			{% empty %}
+				<span class="empty">(None assigned yet)</span>
+			{% endfor %}
+			{% endwith %}
+		</div>
+
+		<div class="box">
+			<div class="columns">
+				<div class="column is-one-quarter">
+					<h4>External URLs</h4>
+				</div>
+				<div class="column">
+					<h4>👉 <a href="{{ postprod_url }}/{{puzzle.postprod.slug}}/">{{ puzzle.name }} on staging</a></h4>
+				</div>
+			</div>
+			<div class="columns">
+				<div class="column is-one-quarter">
+					<h4>Summary</h4>
+				</div>
+				<div class="column">
+					{{ puzzle.summary|markdown|default:"--" }}
+				</div>
+			</div>
+			<div class="columns">
+				<div class="column is-one-quarter">
+					<h4>Description</h4>
+				</div>
+				<div class="column">
+					{{ puzzle.description|markdown }}
+				</div>
+			</div>
+			<div class="columns">
+				<div class="column is-one-quarter">
+					<h4>Mechanics</h4>
+				</div>
+				<div class="column">
+					{{ puzzle.editor_notes|markdown|default:"--" }}
+				</div>
+			</div>
+			{% if puzzle.notes %}
+			<div class="columns">
+				<div class="column is-one-quarter">
+					<h4>Requests</h4>
+				</div>
+				<div class="column">
+					{{ puzzle.notes|markdown }}
+				</div>
+			</div>
+			{% endif %}
+			{% if puzzle.is_meta %}
+			<div class="columns">
+				<div class="column">
+					<strong>This is a meta</strong>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="box">
+			<h3>Discord Channel</h3>
+			{% if discord.status == 'disabled' %}
+				❌ Discord is disabled
+			{% elif discord.status == "broken" %}
+				❌ Discord info unavailable - an error occurred when trying to access it.
+				{% if user.is_staff %}
+					<pre>{{ discord.error | escape }}</pre>
+				{% endif %}
+			{% elif not discord.channel_id %}
+				❌ Not linked to Discord
+				{% if can_manage_discord %}
+					<form method="POST">
+						{% csrf_token %}
+						<input class="button is-small" type="submit" name="link-discord" value="Create Channel">
+					</form>
+				{% endif %}
+			{% else %}
+				<a href="{{discord.url}}">#{{discord.name}}</a>
+				<br/>
+				{% if discord.public %}
+					This channel is public.
+					{% if can_manage_discord %}
+						<form method="POST">
+							{% csrf_token %}
+							<input class="button is-small" type="submit" name="discord-private" value="Make it private">
+						</form>
+					{% endif %}
+				{% elif discord.i_can_see %}
+					You are a member of this private channel.
+					{% if not is_author and not is_editor %}
+						<form method="POST">
+							{% csrf_token %}
+							<input class="button is-small" type="submit" name="unsubscribe-me" value="Leave Channel">
+						</form>
+					{% else %}
+						You cannot unsubscribe from it because you are an author or editor for it.
+					{% endif %}
+					{% if puzzle.status == "II" and can_manage_discord %}
+						<form method="POST">
+							{% csrf_token %}
+							<input class="button is-small" type="submit" name="discord-public" value="Make it public">
+						</form>
+					{% endif %}
+				{% else %}
+					You are not a member of this private channel, but since you are spoiled you can join it.
+					<form method="POST">
+						{% csrf_token %}
+						<input class="button is-small" type="submit" name="subscribe-me" value="Join Channel">
+					</form>
+				{% endif %}
+				{% if user.is_staff %}
+					<form method="POST">
+						{% csrf_token %}
+						<input class="button is-small" type="submit" name="resync-discord" value="Fix out-of-sync channel">
+					</form>
+				{% endif %}
+			{% endif %}
+		</div>
+
+		<div class="box">
+			<h3>
+				Tags
+				<a href="{% url 'puzzle_tags' puzzle.id %}" class="button is-small is-light toggle-show">Edit</a>
+			</h3>
+			{% with puzzle.tags.all as tags %}
+				{% if tags %}
+				{% for tag in tags %}{% if not forloop.first %}, {% endif %}{{ tag.name }}{% endfor %}
+				{% else %}
+					<span class="empty">(none)</span>
+				{% endif %}
+			{% endwith %}
+		</div>
+
+
+		<div class="box">
+
+			<h3>
+				Puzzle
+				<button type="button" class="button is-small is-light toggle-show" data-target="content-form" data-rehide="Hide editing">Edit</button>
+			</h3>
+			<div id="content-form" class="hidden block">
+			<form method="post" >
+				{% csrf_token %}
+				{{ content_form.content }}
+				<input type="submit" class="button is-info" name="edit_content" value="Submit">
+			</form>
+			</div>
+{% comment %} 			{% if puzzle.has_postprod %}<b>Since the puzzle has been postprodded, <a href="{{ postprod_url }}/{{puzzle.postprod.slug}}/">the postprodded puzzle</a> should be used rather than this field.</b>{% endif %} {% endcomment %}
+			{% if puzzle.content %}
+			{{ puzzle.content|urlizetrunc:30 }}
+			{% else %}
+			<div class="empty">(no puzzle yet)</div>
+			{% endif %}
+		</div>
+
+		<div class="box">
+
+			<h3>
+				Solution walkthrough
+				<button type="button" class="button is-small is-light toggle-show" data-target="solution-form" data-rehide="Hide editing">Edit</button>
+			</h3>
+			<form method="post" id="solution-form" class="hidden">
+				{% csrf_token %}
+				{{ solution_form.solution }}
+				<input type="submit" class="button is-info" name="edit_solution" value="Submit">
+			</form>
+{% comment %} 			{% if puzzle.has_postprod %}<b>Since the puzzle has been postprodded, <a href="{{ postprod_url }}/{{puzzle.postprod.slug}}/solution/">the postprodded solution</a> should be used rather than this field.</b>{% endif %} {% endcomment %}
+			{% if puzzle.solution %}
+			{{ puzzle.solution|urlizetrunc:30 }}
+			{% else %}
+			<div class="empty">(no solution yet)</div>
+			{% endif %}
+		</div>
+
+		<div class="box">
+			<h3>Hints ({{ puzzle.hints.all|length }}) <a class="button is-small is-light toggle-show" href="{% url 'puzzle_hints' puzzle.id %}">View all</a></h3>
+			<details>
+				<summary>View hints</summary>
+				<table class="table classic">
+					<thead>
+						<tr>
+							<td>Order</td>
+							<td>Keywords</td>
+							<td>Content</td>
+							<td></td>
+						</tr>
+					</thead>
+				{% for hint in puzzle.hints.all|dictsort:"order" %}
+				<tr>
+				<td>{{ hint.order }}</td>
+				<td>{{ hint.keywords }}</td>
+				<td>{{ hint.content }}</td>
+				<td><a href="{% url 'edit_hint' hint.id %}">Edit/Delete</a></td>
+				</tr>
+				{% endfor %}
+				</table>
+			</details>
+			<details>
+			<summary>Add hint</summary>
+				<form method="POST" id="add-hint" >
+					{% csrf_token %}
+					{{ hint_form.non_field_errors }}
+					{% for field in hint_form %}
+					<div class='columns {{ field.name }}'>
+						<div class="column form-column {{field.field.required|yesno:"is-required," }}">
+							{% if not field.is_hidden %}
+							<label class="label">
+								{{ field.label }}
+							</label>
+							{% endif %}
+							<div class="control">
+								{{ field }}
+								{{ field.errors }}
+							</div>
+							<p>
+								<small>
+									{{ field.help_text }}
+								</small>
+							</p>
+						</div>
+					</div>
+					{% endfor %}
+					<button type="submit" class="button is-small is-fullwidth" name="add_hint">Add</button>
+				</form>
+			</details>
+		</div>
+
+		<div class="box">
+			<h3>Postprod</h3>
+			{% if puzzle.has_postprod %}
+			<p>
+				<a href="{% url 'puzzle_postprod' puzzle.id %}">View postprod data</a><br>
+			</p>
+			{% endif %}
+			<p>
+				Download this puzzle's <a href="{% url 'puzzle_postprod_metadata' puzzle.id %}">metadata.json</a>
+				<br>
+				Download this puzzle's <a href="{% url 'puzzle_hints_json' puzzle.id %}">hints.json</a>
+			</p>
+			{% if puzzle.has_postprod %}
+			Postprodded at <span class="timestamp" data-timestamp="{{puzzle.postprod.mtime.timestamp}}">{{puzzle.postprod.mtime}}</span>, file size {{puzzle.postprod.get_size}}. <a href="{% url 'postprod_zip' puzzle.id %}">Download zip file</a>.<br>
+			<a href="{% url 'puzzle_postprod' puzzle.id %}">Upload a new version</a>
+			{% else %}
+			<div class="empty">(no postprod uploaded yet -
+			<a href="{% url 'puzzle_postprod' puzzle.id %}">upload one now</a>)</div>
+			{% endif %}
+
+		</div>
+
+
+		<form method="POST" action="{% url "puzzle_escape" puzzle.id %}">
+		{% csrf_token %}
+		<h2>
+			Testsolve Sessions
+			<input class="button is-info is-small" type="submit" name="testsolve" value="Start new testsolving session">
+		</h2>
+		</form>
+		{% if testsolve_sessions %}
+		<div class="block"><a href="{% url 'puzzle_feedback' puzzle.id %}">View all feedback for this puzzle</a> | <a href="{% url 'puzzle_feedback_csv' puzzle.id %}">Download as CSV</a></div>
+		<div class="block">✅ = correct guess 🤷 = no guess yet</div>
+
+		{% for session in testsolve_sessions %}
+		{% with session.puzzle as puzzle %}
+		<div class="message">
+			<div class="message-header">
+				<span><a href="{% url 'testsolve_one' session.id %}">Session {{ session.id }}</a> {{ session.has_correct_guess|yesno:"✅,🤷" }}</span>
+				Finished: {{ session.get_done_participants_display }}
+			</div>
+			<div class="message-body">
+				<div class="columns">
+					<div class="column is-three-quarters">
+						{{ session.notes|urlizetrunc:30|markdown }}
+						<strong>Participants:</strong>
+						{% user_list session.participants %}
+					</div>
+					<div class="column">
+						<div class="tags has-addons are-small">
+							<span class="tag is-info">{{ session.get_average_diff | floatformat }}</span>
+							<span class="tag is-dark">Avg Diff</span>
+						</div>
+						<div class="tags has-addons are-small">
+							<span class="tag is-info">{{ session.get_average_fun | floatformat }}</span>
+							<span class="tag is-dark">Avg Fun</span>
+						</div>
+						<div class="tags has-addons are-small">
+							<span class="tag is-info">{{ session.get_average_hours | floatformat }}</span>
+							<span class="tag is-dark">Avg Hours</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endwith %}
+		{% endfor %}
+
+		{% else %}
+		<div class="empty">(no testsolve sessions yet)</div>
+		{% endif %}
+
+		<div class="block">
+			{% comment_list request.user puzzle comments comment_form True True %}
+		</div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+{% if enable_keyboard_shortcuts %}
+<script>
+document.onkeydown=nextpage;
+function nextpage(e){
+	var event = document.all ? window.event : e;
+	if (!/^(?:input|textarea|select|button)$/i.test(e.target.tagName)) {
+		// on press "j", go to the next puzzle unread
+		if (event.keyCode == 74)  {% if next_unread_puzzle_id %}location="{% url 'puzzle' next_unread_puzzle_id %}"; {% else %}alert("You have no more unread spoiled puzzles.");{% endif%}
+
+		// on press "h", go home
+		if (event.keyCode == 72)  location="{% url 'index' %}";
+
+		// on press "m", scroll to the bottom of the page
+		if (event.keyCode == 77) window.scrollTo(0,document.body.scrollHeight);
+		// on press "n", scroll to the top of the page
+		if (event.keyCode == 78) window.scrollTo(0,0);
+		// on press "?", show help
+		if (event.keyCode == 191) alert("'j' to go to your next unread puzzle. 'm'/'n' to go to the bottom/top of the page. 'h' for home.");
+	}
+}
+</script>
+{% endif %}
+{% endblock %}

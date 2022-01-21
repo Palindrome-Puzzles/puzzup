@@ -1,0 +1,9 @@
+{{ request.user }} updated the {{ support.get_team_display }} ticket on {{ support.puzzle.name }} to {{ support.get_status_display }} (from {{old_status}}) with the below note:
+
+{{ new_notes }}
+
+Link to request: {{ request.scheme }}://{{ request.get_host }}{% url 'support_by_puzzle_id' support.puzzle.id support.team %}
+
+Old notes:
+
+{{ old_notes }}

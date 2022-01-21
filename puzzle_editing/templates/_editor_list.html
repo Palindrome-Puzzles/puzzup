@@ -1,0 +1,53 @@
+{% load user_list %}
+{% load markdown %}
+{% load humanize %}
+
+<h2>{{ title }}</h2>
+
+{% if puzzles %}
+<table class="table is-striped sortable">
+	<tr align="left">
+		<th>🤔</th>
+		<th>Title</th>
+		<th>Authors</th>
+		<th>Description</th>
+		<th>Mechanics</th>
+		<th>Requests</th>
+		<th>Last Status Change</th>
+	</tr>
+	{% for puzzle in puzzles %}
+	<tr
+		class="puzzle-row {% if puzzle.status == dead_status %}dead{% elif puzzle.status == deferred_status %}deferred{% elif puzzle.status in past_needs_solution_statuses %}past_needs_solution{% endif %} {% if puzzle.is_spoiled %}spoiled {% if not puzzle.last_visited_date or puzzle.last_comment_date and puzzle.last_comment_date > puzzle.last_visited_date %}unvisited{% endif %}{% endif %} {% if puzzle.has_answer %}answered{%endif%}">
+		{% if puzzle.is_author %}
+		<td sorttable_customkey="1" title="You are an author">📝</td>
+		{% elif puzzle.is_editing %}
+		<td sorttable_customkey="2" title="You are an editor">💬</td>
+		{% elif puzzle.is_factchecking %}
+		<td sorttable_customkey="3" title="You are a factchecker">🛂</td>
+		{% elif puzzle.is_postprodding %}
+		<td sorttable_customkey="4" title="You are a postprodder">🖼️</td>
+		{% elif puzzle.is_spoiled %}
+		<td sorttable_customkey="98" title="You are spoiled">👀</td>
+		{% else %}
+		<td sorttable_customkey="99" title="You are not spoiled">❓</td>
+		{% endif %}
+		<td sorttable_customkey="{{ puzzle.id }}">{{ puzzle.html_link }}</td>
+	{% if limit is None or forloop.counter0 < limit %}
+		<td>{% user_list puzzle.authors linkify=True %}</td>
+		<td class="small-md puzzle-desc">
+			<div class="hidden" id="puzzle-desc-{{ puzzle.id }}">{{ puzzle.description|urlizetrunc:30|markdown }}</div>
+			<button type="button" class="toggle-show button is-link is-outlined is-small" data-target="puzzle-desc-{{ puzzle.id }}" data-rehide="Hide">Show</button>
+
+		</td>
+		<td class="small-md">{{ puzzle.editor_notes }}</td>
+		<td class="small-md">{{ puzzle.notes|urlizetrunc:30|markdown }}</td>
+		<td class="timestamp" sorttable_customkey="{{ puzzle.status_mtime.timestamp }}">{{ puzzle.status_mtime | naturaltime }}</td>
+	{% endif %}
+	</tr>
+	{% endfor %}
+</table>
+{% else %}
+<div class="box">
+No puzzles to list.
+</div>
+{% endif %}

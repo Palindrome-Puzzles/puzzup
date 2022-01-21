@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load puzzle_list %}
+{% load markdown %}
+
+{% block title %}Statistics{% endblock %}
+
+{% block main %}
+<h1>Statistics</h1>
+
+<div class="box">
+    <div>
+        <h2>Puzzle Status</h2>
+        <table class="classic">
+            <tr align="left">
+                <th>Status</th>
+                <th>Count</th>
+                {% for tag in tags %}
+                <th>[{{tag.name}}]</th>
+                {% endfor %}
+                <th>Others</th>
+            </tr>
+            {% for s in status %}
+            <tr>
+                <td>{{ s.status }}</td>
+                <td>{{ s.count }}</td>
+                {% for tag in tags %}
+                <td>{{ s|get_item:tag.name }}</td>
+                {% endfor %}
+                <td>{{ s.rest_count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<div class="box">
+    <div>
+        <h2>Other Stuff</h2>
+        <table class="classic">
+            <tr align="left">
+                <th>Answers...</th>
+                <th>#</th>
+            </tr>
+            <tr>
+                <td>in need of a puzzle</td>
+                <td>{{answers.waiting}}</td>
+            </tr>
+            <tr>
+                <td>not yet released</td>
+                <td title="UNRELEASED_PUZZLE_COUNT">{{unreleased_count|default_if_none:"?"}}</td>
+            </tr>
+            <tr>
+                <th>assigned already</th>
+                <th>{{answers.assigned}}</th>
+            </tr>
+            {% for tag in tags %}
+            <tr>
+                <td>assigned [{{tag.name}}]</td>
+                <td>{{answers|get_item:tag.name}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>assigned (the rest)</td>
+                <td>{{answers.rest}}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="vertical-divider"> </div>
+    <div>
+      <h2>Writing Schedule</h2>
+      <table class="classic">
+        <tr align="left">
+          <th>Puzzles</th>
+          <th>#</th>
+        </tr>
+        <tr>
+          <td>…past writing</td>
+          <td>{{ past_writing }}</td>
+        </tr>
+        <tr>
+          <td>…past testsolving</td>
+          <td>{{ past_testsolving }}</td>
+        </tr>
+      </table>
+    </div>
+</div>
+
+<div class="box">
+<h2>Chart!</h2>
+<div style="margin: 20px 50px;">
+    <div style="margin-bottom: 10px;"><a href="?time=alltime">All time</a> <a href="?time=1m">1 Month</a> <a
+            href="?time=2w">2 weeks</a> <a href="?time=1w">1 Week</a> <a href="?time=3d">3 Days</a> <a href="?time=1d">1
+            Day</a> </div>
+    <img src="data:image/png;base64, {{ image_base64 }}" alt="puzzle stats" />
+    <span class="deemph">TARGET_PUZZLE_COUNT = {{ target_count }}</span>
+</div>
+</div>
+{% endblock %}

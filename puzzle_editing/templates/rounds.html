@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load markdown %}
+{% load name_list %}
+
+{% block title %}Rounds{% endblock %}
+
+{% block bodyclass %}rounds {{ single_round|yesno:"singleround," }}{% endblock %}
+
+{% block main %}
+{% if not single_round %}
+<h1>Answers, by round</h1>
+{% else %}
+<div class="block">
+	<a href="{% url "rounds" %}">Back to all rounds</a>
+</div>
+{% endif %}
+
+<input id="hide-assignments" type="checkbox" class="hide-assignments" {{ single_round|yesno:",checked" }}> <label for="hide-assignments">Hide puzzle assignments</label>
+
+<br><br>
+
+{% for round in rounds %}
+<div class="columns">
+	<div class="column is-2">
+		<h2>
+			<a class="round-link" href="{% url "round" round.id %}">{{ round.name }}</a>
+			<a class="edit-link" href="{% url 'edit_round' round.id %}">edit</a>
+		</h2>
+		<div class="tags are-medium">
+			<span class="tag is-white is-outlined">🎩 {{ round.editors|name_list }}</span>
+		</div>
+	</div>
+
+<div class="column">
+<div class="box">
+	{% if round.spoiled %}
+	{{ round.description|markdown }}
+	<table class="classic">
+		<tr align="left">
+			<th colspan="2">Answer</th>
+			<th>Puzzle</th>
+			<th>Status</th>
+			<th>Notes</th>
+		</tr>
+		{% for answer in round.answers %}
+			{% if answer.puzzles %}
+				{% for puzzle in answer.puzzles %}
+					<tr>
+						{% if forloop.first %}
+						<td rowspan="{{ answer.puzzles|length }}">
+							{{ answer.answer }}
+						</td>
+						<td rowspan="{{ answer.puzzles|length }}">
+							<a href="{% url 'edit_answer' answer.id %}">edit</a>
+						</td>
+						{% endif %}
+						<td>
+							<a href="{% url 'puzzle' puzzle.id %}">
+								<span class="assignment-spoiler">{{ puzzle.html_display }}</span>
+								<span class="assignment-unspoiler">(hidden)</span>
+							</a>
+						</td>
+						<td>
+							<span class="assignment-spoiler tag">{{ puzzle.get_status_display }}</span>
+							<span class="assignment-unspoiler"></span>
+						</td>
+						{% if forloop.first %}
+						<td rowspan="{{ answer.puzzles|length }}" class="small-md">
+							{% if answer.notes %}{{ answer.notes|markdown }}{% endif %}
+						</td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td>{{ answer.answer }}</td>
+					<td>
+						<a href="{% url 'edit_answer' answer.id %}">edit</a>
+					</td>
+					<td colspan="2" class="empty">--</td>
+					<td class="small-md">
+						{% if answer.notes %}{{ answer.notes|markdown }}{% endif %}
+					</td>
+				</tr>
+			{% endif %}
+		{% endfor %}
+	</table>
+
+	<form method="post" class="hidden" id="more-answers-{{ round.id }}">
+		{% csrf_token %}
+		<div class="columns">
+			<div class="column is-one-third">
+				{{ round.form.answer.label }}<br>
+				{{ round.form.answer }}
+			</div>
+			<div class="column is-one-third">
+				{{ round.form.notes.label }}<br>
+				{{ round.form.notes }}
+			</div>
+			<div class="column is-one-third">
+				{{ round.form.round }}
+				<br>
+				<input class="button is-info" type="submit" name="add_answer" value="Add answer">
+			</div>
+		</div>
+		or <a href="{% url 'bulk_add_answers' round.id %}">bulk-add answers</a>
+
+	</form>
+
+	<button class="button is-small is-link is-light toggle-show" data-target="more-answers-{{ round.id }}" data-rehide="Hide answer form">Add more answers to this round</button>
+
+	{% else %}
+	<p>
+		<i>Description and {{ round.answers|length }} answer{{ round.answers|length|pluralize }} hidden.</i>
+	</p>
+	<form method="post">
+		{% csrf_token %}
+		<button class="button is-warning" type="submit" name="spoil_on" value="{{ round.id }}">Spoil me</button>
+	</form>
+	{% endif %}
+</div>
+</div>
+</div>
+{% endfor %}
+
+{% if not single_round %}
+
+<div class="box hidden" id="new-round-box">
+	<form method="post">
+		<h2>Add a new round</h2>
+		{% for field in new_round_form %}
+		<div class="columns">
+			<div class="column is-one-quarter">
+				{{ field.label }}
+			</div>
+			<div class="column">
+				{{ field }}
+			</div>
+		</div>
+		{% endfor %}
+		{% csrf_token %}
+		<div class="columns">
+			<div class="column is-one-quarter">
+			</div>
+			<div class="column">
+				<input class="button is-info" type="submit" name="new_round" value="Submit new round">
+			</div>
+		</div>
+
+	</form>
+</div>
+<div class="columns">
+	<div class="column is-2">
+	</div>
+	<div class="column">
+		<button class="button is-link is-light toggle-show" data-target="new-round-box" data-rehide="Hide new round form">Add a new round</button>
+	</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load markdown %}
+
+{% block title %}New Puzzle{% endblock %}
+
+{% block main %}
+
+<h1 class="title">New Puzzle</h1>
+<p>Once you submit, PuzzUp will automatically create an associated channel in Discord. If a channel for this puzzle <i>already</i> exists in Discord, use the <code>/up create</code> command in that channel instead.</p>
+<form action="{% url 'puzzle_new' %}" method="post">
+	{% csrf_token %}
+	{% for field in form %}
+	<div class="columns">
+		<div class="column is-one-third">
+			<label class="label">{{ field.label }}</label>
+			<p class="help">{{ field.help_text|markdown|safe }}</p>
+		</div>
+		<div class="column">
+			<div class="control">
+				{{ field }}
+				{{ field.errors }}
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+
+	<div class="columns">
+		<div class="column is-one-third">
+		</div>
+		<div class="column">
+			<input class="button is-primary" type="submit" value="Submit">
+		</div>
+	</div>
+
+</form>
+{% endblock %}

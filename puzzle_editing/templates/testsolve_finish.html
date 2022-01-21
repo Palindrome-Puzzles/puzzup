@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load user_list %}
+{% load markdown %}
+
+{% block bodyclass %}testsolving-session{% endblock %}
+{% block title %}Finish Testsolving {{ session.puzzle }}{% endblock %}
+
+{% block main %}
+<nav class="breadcrumb" aria-label="breadcrumbs">
+	<ul>
+		<li><a href="{% url 'testsolve_one' session.id %}">Back to testsolving session</a></li>
+	</ul>
+</nav>
+<h1>
+	Finish Testsolving ({{ session.puzzle }}, Session #{{ session.id }})
+</h1>
+<form action="{% url 'testsolve_one' session.id %}" method="POST" onsubmit="return confirm('This will remove you from this testsolving session without adding any feedback or spoiling you. Are you sure?');">
+	{% csrf_token %}
+		Joined by accident? <button class="button is-small" type="submit" name="escape_testsolve" value="1">Escape this testsolving session</button>
+	</form>
+<p>*<em> required field</em></p>
+
+{% if participation %}
+<form class="testsolve-form" method="post">
+{% csrf_token %}
+{{ form.non_field_errors }}
+{% for field in form %}
+<div class="columns {{ field.name }}">
+	<div class="column is-one-quarter">
+	</div>
+	<div class="column form-column {{ field.field.required|yesno:"is-required," }}">
+		<label class="label">
+			{% if field.help_text %}
+				{{ field.help_text|safe|markdown }}
+			{% else %}
+				<p><strong>{{ field.label }}</strong></p>
+			{% endif %}
+		</label>
+		<div class="control">
+			{{ field }}
+			{{ field.errors }}
+		</div>
+	</div>
+	<div class="column is-one-quarter">
+	</div>
+</div>
+{% endfor %}
+<div class="columns">
+	<div class="column is-one-quarter"></div>
+	<div class="column">
+		<input class="button is-primary" type="submit" value="Submit">
+	</div>
+</div>
+</form>
+
+{% else %}
+
+You do not appear to be participating in testsolve session #{{ session.id }}.
+
+{% endif %}
+{% endblock %}
+
+{% block extrajs %}
+<script>
+$(document).ready(function() {
+	var tech = $('[id^=id_technical_issues]');
+	var stuck = $('[id^=id_stuck_overall]');
+
+	if (tech.find('[value=True]').is(':checked')) {
+		tech.parents('form').addClass('has-tech-problems');
+	}
+
+	if (stuck.find('[value=True]').is(':checked')) {
+		stuck.parents('form').addClass('is-stuck');
+	}
+
+	tech.change(function() {
+		$(this).parents('form').removeClass('has-tech-problems');
+		if($('#id_technical_issues_0').is(":checked")) {
+			$(this).parents('form').addClass('has-tech-problems');
+		}
+	});
+
+	stuck.change(function() {
+		$(this).parents('form').removeClass('is-stuck');
+		if($('#id_stuck_overall_0').is(":checked")) {
+			$(this).parents('form').addClass('is-stuck');
+		}
+	});
+});
+</script>
+{% endblock %}

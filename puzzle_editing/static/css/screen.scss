@@ -1,0 +1,599 @@
+@import "bulma/utilities/_all";
+@import "bulma/form/shared";
+@import "bulma/form/input-textarea";
+@import "bulma/form/select";
+
+:root {
+	--bg: #fff;
+	--nav-bg: #f8f8cc;
+	--nav-bg-hover: #ffe;
+	--nav-selected-border: #aa6;
+	--text-color: black;
+	--deemphasized-color: #777;
+	--correct-color: #080;
+	--error-color: #900;
+	--secondary-bg: #f2f2f2;
+	--tertiary-bg: #e2e2e2;
+	--link-color: #00e;
+	--visited-color: #551a8b;
+	--border-color: #aaa;
+	--active-shadow-color: #69f;
+
+	--nav-color: var(--text-color);
+	--nav-link-color: var(--link-color);
+	--nav-visited-color: var(--visited-color);
+	--nav-deemphasized-color: var(--deemphasized-color);
+	--input-bg: var(--bg);
+
+	--by-author-color: #fee;
+	--testsolve-color: #efe;
+}
+
+/* general */
+
+html, body {
+	background-color: #fffbec;
+}
+
+nav {
+	margin-bottom: 1em;
+}
+
+input[type="text"], input[type="password"], input[type="email"], textarea {
+	@extend %input;
+}
+
+select {
+	@extend .select;
+}
+
+.small-md p:first-child { margin-top: 0; }
+.small-md p:last-child { margin-bottom: 0; }
+
+.content {
+	padding-top: 2em;
+}
+
+// TABLES
+
+.content table tbody tr:last-child td {
+	border-bottom-width: 1px;
+}
+
+// BY ROUND
+
+%table {
+	th {
+		background-color: var(--secondary-bg);
+	}
+}
+
+%answer {
+	font-family: monospace;
+	font-weight: bold;
+	font-size: .9rem;
+
+	a {
+		color: black;
+	}
+}
+
+body.byround {
+	table {
+		@extend %table;
+
+		font-size: .95rem !important;
+
+
+		.answer {
+			@extend %answer;
+		}
+
+		.authors, .editors {
+			font-size: .9em;
+		}
+
+		.mechanics, .notes {
+			font-size: .8em;
+		}
+	}
+
+	.meta {
+		background: fade-out(green, .95);
+	}
+}
+
+// ANSWER LIST
+
+body.answers {
+	.answer {
+		@extend %answer;
+	}
+}
+
+// ANSWER SELECTOR
+
+body.assign-answers {
+	.answer {
+		@extend %answer;
+	}
+}
+
+// AWAITING EDITOR
+
+body.awaiting-editor {
+	table {
+		@extend %table;
+	}
+
+	.puzzle-desc {
+		div {
+			display: block;
+		}
+
+		button {
+			display: none;
+		}
+	}
+}
+
+// PUZZLE PAGE
+
+.puzzle-page {
+	h3 {
+		.button {
+			font-weight: normal;
+		}
+	}
+}
+
+.puzzle-sidebar {
+	background: #f1f1f1;
+
+	h3 {
+		border-bottom: 1px solid #ddd;
+		padding-bottom: .3em;
+	}
+
+	h5 {
+		margin-bottom: .3em;
+	}
+}
+
+#change-status {
+	button {
+		text-align: left;
+		display: block; // needed to override display: inline-flex;
+	}
+}
+
+/* navigation */
+
+.countdown {
+	color: var(--nav-deemphasized-color);
+	font-size: 85%;
+}
+.countdown .time {
+	color: var(--nav-color);
+}
+
+h1 {
+	font-size: 140%;
+}
+
+h2 {
+	font-size: 120%;
+	font-weight: bold;
+}
+
+h3 {
+	font-size: 120%;
+	font-weight: bold;
+}
+
+table.classic {
+	border-collapse: collapse;
+	overflow-wrap: break-word;
+}
+table.classic th, table.compact th {
+	padding: 0.5em;
+	background-color: var(--secondary-bg);
+}
+table.classic th.small {
+    font-size: 85%;
+}
+table.compact th {
+	text-align: left;
+	font-weight: normal;
+}
+table.compact th :first-child { margin-top: 0; }
+table.compact tr > td:first-child { padding-left: 2em; }
+table.compact th :last-child { margin-bottom: 0; }
+td.label-cell {
+	max-width: 24em;
+}
+td.label-cell label {
+	font-weight: bold;
+}
+.help {
+	font-size: 85%;
+}
+.comment-id {
+	font-size: 85%; opacity: 50%;
+}
+table.classic td {
+	padding: 0.5em;
+	border-top: 1px solid var(--border-color);
+	max-width: 30em;
+}
+.warning {
+	font-weight: bold;
+}
+.warning::before {
+	content: "⚠️";
+	font-size: 150%;
+	margin-right: 0.2em;
+}
+
+// EIC PAGE
+
+body.eic {
+	.answer {
+		background: white;
+		color: #333;
+		text-transform: uppercase;
+		font-size: 1em;
+	}
+}
+
+/* puzzle */
+
+table.puzzle-table {
+	min-width: 100%;
+	border-collapse: collapse;
+
+	th {
+		padding: 0.5em;
+		border-top: 1px solid var(--border-color);
+		border-bottom: 1px solid var(--border-color);
+		text-align: right;
+	}
+	table.puzzle-people th {
+		width: 10em;
+	}
+	table.puzzle-info th {
+		width: 7em;
+	}
+	td {
+		padding: 0.5em;
+		border-top: 1px solid var(--border-color);
+		border-bottom: 1px solid var(--border-color);
+	}
+	table.puzzle-info td {
+		padding: 0 0.5em;
+	}
+	td:first-child, th:first-child {
+		padding-left: 0;
+	}
+	td:last-child, th:last-child {
+		padding-right: 0;
+	}
+	td p, td pre {
+		margin: 0.5em 0;
+	}
+}
+
+.edit-link {
+	font-size: 80%;
+	font-weight: normal;
+}
+
+/* comments */
+.date {
+	font-size: 80%;
+}
+.system {
+	color: var(--deemphasized-color);
+}
+.by-author { background-color: var(--by-author-color); }
+.testsolve { background-color: var(--testsolve-color); }
+.status-change {
+	color: var(--deemphasized-color);
+	border: 1px solid var(--border-color);
+	border-radius: 3px;
+	padding: 0.25em;
+}
+.status-change::before {
+	content: "→ ";
+}
+.ghost-button {
+	background-color: transparent;
+	color: inherit;
+	border: 1px dashed var(--border-color);
+	border-radius: 3px;
+}
+.ghost-selected {
+	border: 3px double var(--border-color);
+	font-weight: bold;
+}
+
+/* statistics */
+
+.flex-row {
+	display: flex;
+}
+.vertical-divider {
+	width: 50px;
+}
+
+/* testsolving */
+
+.testsolve-finish {
+    font-size: 120%;
+}
+
+.testsolve-finish-correct {
+	font-weight: bold;
+	border: 0.25em solid var(--correct-color);
+	padding: 0.25em;
+}
+
+.guess.correct {
+	font-weight: bold;
+	color: var(--correct-color);
+
+	&::before {
+		content: "✅";
+	}
+}
+
+.guess.incorrect::before {
+	content: "❌";
+}
+
+.empty {
+	color: var(--deemphasized-color);
+	font-style: italic;
+}
+
+.hidden {
+	display: none;
+}
+
+.hide-dead:checked ~ div table tr.dead {
+	display: none;
+}
+
+.hide-deferred:checked ~ div table tr.deferred {
+	display: none;
+}
+
+.hide-visited:checked ~ div table tr.puzzle-row:not(.unvisited) {
+	display: none;
+}
+
+.hide-past-solution:checked ~ div table tr.past_needs_solution {
+	display: none;
+}
+
+.show-only-answer:checked ~ div table tr.puzzle-row:not(.answered) {
+	display: none;
+}
+
+.unvisited .puzzle-link {
+	font-weight: bold;
+	position: relative;
+
+	&::before {
+		position: absolute;
+		left: -0.8em;
+		width: 0.6em;
+		height: 0.6em;
+		border-radius: 0.3em;
+		background-color: var(--error-color);
+		content: " ";
+		display: block;
+	}
+}
+
+.hide-assigned:checked ~ div .assigned {
+	display: none;
+}
+.hide-assignments:checked ~ div > table .assignment-spoiler {
+	display: none;
+}
+.hide-assignments:not(:checked) ~ div > table .assignment-unspoiler {
+	display: none;
+}
+.hide-delete-answer:checked ~ div > table .delete-answer-button {
+	display: none;
+}
+.hide-assignments:not(:checked) ~ div > table .assignment-unspoiler {
+	display: none;
+}
+.hide-test-authored:checked + label + input + label + div > table tr.test-authored {
+	display: none;
+}
+.hide-test-spoiled:checked + label + div > table tr.test-spoiled {
+	display: none;
+}
+
+.show-delete-answer:checked ~ .deemph {
+	color: var(--deemphasized-color);
+	font-size: 80%;
+}
+
+.assigned-to-other {
+	color: var(--deemphasized-color);
+}
+
+.hide-assigned-to-other:checked + label + br + br + div table tr.assigned-to-other {
+	display: none;
+}
+
+.markdown-textarea {
+	display: inline-block;
+	border: 1px solid var(--border-color);
+	background-color: var(--input-bg);
+	border-radius: 3px;
+	padding: 2px;
+	padding: 0.5em;
+}
+.markdown-preview p:first-child { margin-top: 0; }
+.markdown-preview p:last-child { margin-bottom: 0; }
+.success {
+    font-size: 200%;
+	color: var(--correct-color);
+}
+
+.user-checkbox-select-multiple {
+	border: 1px solid var(--border-color);
+	background-color: var(--input-bg);
+	border-radius: 3px;
+	max-height: 20em;
+	overflow-y: auto;
+	padding: 0.5em;
+
+	ul {
+		padding-left: 1.5em;
+		margin: 0;
+		padding: 0;
+	}
+
+	li {
+		padding: .1em .5em;
+		list-style-type: none;
+	}
+}
+
+/* edit round */
+
+body.rounds {
+	h2 {
+		.edit-link {
+			font-size: .6em;
+			font-weight: normal;
+		}
+	}
+}
+
+body.singleround {
+	h2 {
+		.round-link {
+			color: black;
+		}
+	}
+}
+
+.sure-delete:checked + label + br + input.delete-round-button {
+	display: block !important;
+}
+.delete-round-button {
+	display: none;
+}
+
+/* spoiled */
+.testsessions {
+	display: flex;
+	flex-direction: column;
+}
+
+/* django */
+.errorlist {
+	color: var(--error-color);
+	font-weight: bold;
+}
+
+// styles
+
+.pretitle {
+	display: block;
+	font-size: 1rem;
+	margin-bottom: .5em;
+	font-weight: normal;
+}
+
+// forms
+
+.is-required {
+	.label {
+		p::before {
+			content: "*";
+		}
+	}
+}
+
+// tables
+
+.timestamp {
+	font-size: .8em;
+}
+
+.left-border {
+	border-left: 1px solid #ccc !important;
+}
+
+// users
+
+// testsolving
+
+.testsolving-session {
+	label {
+		font-weight: normal;
+	}
+
+	textarea {
+		width: 100%;
+		height: 4rem;
+	}
+
+	.control {
+		ul {
+			margin: 0;
+		}
+
+		li {
+			list-style-type: none;
+		}
+	}
+}
+
+.testsolve-form {
+	.technical_issues_device, .technical_issues_description, .stuck_points, .stuck_time, .stuck_unstuck
+	{
+		display: none;
+
+		.form-column {
+			padding-left: 3em;
+		}
+	}
+}
+
+.has-tech-problems {
+	.technical_issues_device, .technical_issues_description
+	{
+		display: flex;
+	}
+}
+
+.is-stuck {
+	.stuck_points, .stuck_time, .stuck_unstuck {
+		display: flex;
+	}
+}
+
+
+// SUPPORT PAGES
+
+.support-sidebar {
+	background: #f1f1f1;
+
+	h3 {
+		border-bottom: 1px solid #ddd;
+		padding-bottom: .3em;
+	}
+
+	h5 {
+		margin-bottom: .3em;
+	}
+}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{them}}'s Puzzles{% endblock %}
+{% load puzzle_list %}
+{% load testsolve_session_list %}
+{% block main %}
+	<h1>{{them.display_name | default:them}}</h1>
+	{% if user.is_superuser and not them.is_superuser %}
+	<form method="POST">
+		{% csrf_token %}
+		{% if them.is_meta_editor %}
+		<small><span class="warning">This user is an editor</span></small>
+		<input class="button-sm is-info" type="submit" name="remove-editor" value="Remove editor role">
+		{% else %}
+		<input class="button-sm is-info" type="submit" name="make-editor" value="Make this user an editor">
+		{% endif %}
+	</form>
+	{% endif %}
+    {% if them.bio %}
+        <h2>Bio</h2>
+        <em>{{them.bio}}</em>
+    {% endif %}
+
+<p class="block">
+	<code>{{them.discord_username}}</code> on discord
+</p>
+
+<div class="box">
+<h2>Puzzles {{them.display_name | default:them}} is authoring</h2>
+{% puzzle_list them.authored_puzzles request.user %}
+</div>
+
+{% if them.editing_puzzles %}
+<div class="box">
+	<h2>Puzzles {{them.display_name | default:them}} is editing</h2>
+	{% puzzle_list them.editing_puzzles request.user %}
+</div>
+{% endif %}
+
+<div class="box">
+<h2>Puzzles {{them.display_name | default:them}} is factchecking</h2>
+{% puzzle_list them.factchecking_puzzles request.user %}
+</div>
+
+<div class="box">
+<h2>Puzzles {{them.display_name | default:them}} is postprodding</h2>
+{% puzzle_list them.postprodding_puzzles request.user %}
+</div>
+
+<div class="box">
+<h2>Testsolving sessions {{them.display_name|default:them}} has been in</h2>
+{% testsolve_session_list testsolving_sessions request.user %}
+</div>
+{% endblock %}

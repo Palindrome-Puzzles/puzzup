@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ team|title }} support for {{ puzzle.name }}{% endblock %}
+
+{% block main %}
+<a href="{% url 'support_by_puzzle' puzzle.id %}">🔙 to support for  {{ puzzle.name }}</a>
+<h1>There is currently no {{ team }} support request for {{ puzzle.name }}</h1>
+<div class="box">
+    <form method="POST" id="status">
+        {% csrf_token %}
+        <p><input type="submit" name="create" class="button is-small is-info" value="Create"> or <a href="{% url 'puzzle' puzzle.id %}">Back to the puzzle</a></p>
+    </form>
+</div>
+{% endblock %}

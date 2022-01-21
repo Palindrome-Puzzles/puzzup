@@ -1,0 +1,81 @@
+<p>This page tries to give a broad overview of PuzzUp and all the features accessible by every user (which is most of them).</p>
+
+<p>There are a few permission-gated features and pages for editors and superusers covered separately, but editors and admins should read this guide first too.</p>
+
+<h2 id="overview">Overview</h2>
+
+<p>PuzzUp helps guide puzzles through the full puzzle production process:</p>
+
+<ul>
+<li>writing</li>
+<li>revising</li>
+<li>testsolving</li>
+<li>post-production</li>
+<li>copy-editing</li>
+<li>etc…</li>
+</ul>
+
+<p>The main way this is tracked is the <strong>puzzle status</strong>. Each puzzle has a status. PuzzUp has a long list of the available statuses, and it knows to recommend particular transitions between specific statuses, though you can always change to any status at any time.</p>
+
+<p>However, note that most puzzle statuses don&#8217;t have much inherent meaning to PuzzUp. PuzzUp doesn&#8217;t place any hard restrictions on which status changes can actually happen or on who can change statuses. So usually, if you find that a status doesn&#8217;t make sense to you or doesn&#8217;t fit in your workflow, you can skip it or repurpose it as desired.</p>
+
+<p>The most visible feature that all puzzle statuses have is that each status is <em>blocked</em> on a group. The majority of statuses are either blocked on the authors or on the editors of the puzzle; a few statuses are blocked on testsolvers, postprodders, factcheckers, and &#8220;nobody&#8221;. All this means is that the puzzle will be shown more prominently to that group of people or on a page of the website meant for them. The hope is that, for each puzzle, the status will always unambiguously specify whose responsibility it is to take the next steps, to try to avoid situations where people are waiting on each other. However, this does not prevent any other group of people from taking action on the puzzle.</p>
+
+<h2 id="specificstatuses">Specific statuses</h2>
+
+<h3 id="testsolvingneedspostprodneedsfactcheckneedscopyedits">Testsolving, Needs Postprod, Needs Factcheck, Needs Copy Edits</h3>
+
+<p>In particular, the &#8220;Testsolving&#8221; status allows testsolvers to create testsolving sessions. This is covered in more detail later. Testsolving is unusual because it&#8217;s the only PuzzUp activity you do on a puzzle where you must be unspoiled and must avoid the main puzzle page.</p>
+
+<h3 id="deadordeferred">Dead or Deferred</h3>
+
+<p>Puzzles that are &#8220;Dead&#8221; or &#8220;Deferred&#8221; are hidden from most puzzle lists by default, and they&#8217;re also either omitted or treated separately in most statistics. You can still view them in lists by unchecking &#8220;Hide dead puzzles&#8221; and &#8220;Hide deferred puzzles&#8221;.</p>
+
+<h3 id="initialidea">Initial Idea</h3>
+
+<p>Puzzles in &#8220;Initial Idea&#8221; are also sometimes omitted or separated out, since people often submit hundreds more half-baked puzzle ideas than they can work on or that can go into the hunt, and many of those ideas stay in &#8220;Initial Idea&#8221; forever.</p>
+
+<h2 id="authoringapuzzle">Authoring a Puzzle</h2>
+
+<p>To submit a puzzle idea, click &#8220;Add puzzle&#8221; and follow instructions. &#8220;Notes&#8221; are optional and are only shown to <em>spoiled</em> teammates; use them as you wish.</p>
+
+<p>PuzzUp does not dictate the exact workflow after that, but you and other people can:</p>
+
+<ul>
+<li>leave comments on the puzzle</li>
+<li>edit the puzzle</li>
+<li>edit the solution</li>
+<li>change the puzzle status.</li>
+</ul>
+
+<p>The next step is to change the status to &#8220;Awaiting Editor&#8221;, at which point somebody else will assign an editor or editors to your puzzle. (Note: An admin can set up a &#8220;status subscription&#8221; to notify an editor in chief when any puzzle enters this status; see admin docs for more info.)</p>
+
+<p>You can then discuss the puzzle idea with editors, and either of you might change the puzzle status a few times. Eventually, they should assign an answer to allow you to write the puzzle. The biggest qualitative change comes when the puzzle enters the Testsolving status.</p>
+
+<h2 id="testsolving">Testsolving</h2>
+
+<p>Testsolving occurs on the <a href="/testsolve">Testsolve page</a>. Testsolving is organized into &#8220;testsolving sessions&#8221;. A session represents one attempt by a person or a group of people to solve a particular puzzle.</p>
+
+<p>To start a session, go to <a href="/testsolve">Testsolving</a> and click <strong>Start new session</strong> next to a puzzle under <strong>Puzzles you can testsolve</strong>. This includes all puzzles with the status READY TO BE TESTSOLVED. PuzzUp even allows you to testsolve puzzles you&#8217;re spoiled on.</p>
+
+<p>You can also join an ongoing session under <strong>Testsolving sessions you can join</strong>. To make a given session <em>joinable</em>, click the &#8220;Allow others to join&#8221; button. This flag indicates whether a session is looking for new participants, and it can be turned off after the testsolve group has gotten big enough or made enough progress that a separate testsolve would be deemed more useful.</p>
+
+<p>(Note: anybody can join a testsolving session if they have the URL. So, if you have a group of people you want to testsolve a puzzle with, create a session and send them the link, and they will be able to join without anyone touching the <em>joinable</em> switch.)</p>
+
+<p>On a testsolve session&#8217;s page, you can leave comments, which will be visible to other participants viewing the session as well as to the puzzle author or anybody else viewing the spoilery puzzle page itself.</p>
+
+<p>When you are done with the a testsolve, click &#8220;Done with the puzzle?&#8221; to be taken to a page where you can leave more detailed feedback. Submitting this form will mark your participation in the session as <em>done</em>.</p>
+
+<p>Also note that you can fill out this form multiple times after you&#8217;ve finished; the fun/difficulty/hours spent ratings from your most recent submission will be taken.</p>
+
+<p>As an author or editor on a puzzle, basically you should just look at the incoming testsolves and decide when you want to take the puzzle out of the READY TO BE TESTSOLVED status.</p>
+
+<h2 id="hint-writing">Hint-Writing</h2>
+
+<p>Hints were a fairly late addition to PuzzUp in 2021. The numbers and keywords don&#8217;t have any inherent meaning in PuzzUp; the intent is for them to be exported into other systems.</p>
+
+<h2 id="discord">Discord</h2>
+
+<p>Every new puzzle that&#8217;s created on PuzzUp gets a channel created on our Discord. As the puzzle moves through statuses, it moves to a new category on Discord for that status. Most importantly, the only people who can see a channel (after it moves past <strong>Initial Idea</strong>), are those who are spoiled on the puzzle here on PuzzUp.</p>
+
+<p>If you&#8217;ve already created a channel in discord, you (or anyone else) may type the <code>/up create</code> command in that channel, and it will create a PuzzUp record for that channel. </p>

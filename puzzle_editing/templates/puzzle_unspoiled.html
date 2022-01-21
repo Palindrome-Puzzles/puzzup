@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load user_list %}
+{% load markdown %}
+
+{% block title %}{{ puzzle.spoiler_free_title }}{% endblock %}
+
+{% block main %}
+<h1>
+	{{ puzzle.spoiler_free_title }}
+</h1>
+
+<div class="columns">
+	<div class="column is-half">
+		<div class="box">
+		<p>You are not yet spoiled on this puzzle! Do you want to be spoiled on it?</p>
+		{% if role %}
+		<p><b>You currently have the <i>{{ role }}</i> role on this puzzle, so it's likely that you want to continue.</b></p>
+		{% endif %}
+		<form method="post">
+			{% csrf_token %}
+			<input class="button is-info" type="submit" name="do_spoil" value="Spoil me">
+		</form>
+		<br>
+		{% if is_in_testsolving %}
+		<p>This puzzle is in <span class="tag">Testsolving</span>, so you can:</p>
+		{% else %}
+		<p>This puzzle is in <span class="tag">{{ status }}</span>, but if you really want to, you can:</p>
+		{% endif %}
+		<form method="POST" action="{% url 'puzzle_escape' puzzle.id %}">
+			{% csrf_token %}
+			<input class="button is-info" type="submit" name="testsolve" value="Start a new testsolving session">
+		</form>
+		{% if testsolve_sessions %}
+		<br>
+		<p>You can also join an existing testsolve session:</p>
+		<table class="classic sortable">
+			<tr>
+				<th>Session</th>
+				<th>Participants</th>
+				<th>Ended</th>
+			</tr>
+			{% for session in testsolve_sessions %}
+			{% with session.puzzle as puzzle %}
+			<tr>
+				<td sorttable_customkey="{{ session.id }}"><a href="{% url 'testsolve_one' session.id %}">Session {{ session.id }}</a></td>
+				<td>{% user_list session.participants %}</td>
+				<td>{{ session.get_done_participants_display }}</td>
+			</tr>
+			{% endwith %}
+			{% endfor %}
+		</table>
+		{% endif %}
+		</div>
+	</div>
+
+	<div class="column">
+		<div class="box">
+			<h2>External URLs</h2>
+			<h3>👉 <a href="{{ postprod_url }}/{{ puzzle.postprod.slug }}/">{{ puzzle.name }} on staging</a></h3>
+		</div>
+		<div class="box">
+			<h2>Summary</h2>
+			{{ puzzle.summary|markdown }}
+		</div>
+	</div>
+</div>
+{% endblock %}

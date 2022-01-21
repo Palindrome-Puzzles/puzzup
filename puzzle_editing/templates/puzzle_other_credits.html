@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load user_list %}
+
+{% block title %}Other credits for {{ puzzle.spoiler_free_title }}{% endblock %}
+
+{% block outer_main %}
+
+<h1>Other credits for <a href="{% url 'puzzle' puzzle.id %}">{{ puzzle.spoiler_free_title }}</a></h1>
+
+<div class="box">
+    <table class='table classic is-fullwidth'>
+        <thead>
+            <tr>
+                <th>
+                    Type
+                </th>
+                <th>
+                    User(s)
+                </th>
+                <th>
+                    Text
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for oc in puzzle.other_credits.all %}
+            <tr>
+                <td>{{ oc.get_credit_type_display }}</td>
+                <td>{% user_list oc.users %}</td>
+                <td>{{ oc.text }}</td>
+                <td><a href="{% url 'puzzle_other_credit_update' oc.puzzle.id oc.id %}">Edit/Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="box">
+    <h3>Add credit</h3>
+    {{ other_credit_form.errors }}
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in other_credit_form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
+        {% for field in other_credit_form.visible_fields %}
+        <p>
+        {{ field.label }}
+        <br>
+        {{ field }}
+        </p>
+        {% endfor %}
+        <p class="alert">Either choose a list of users, or enter free text. Don't choose both for the same credit entry.</p>
+        <p>
+            <input type="submit" class="button is-primary" value="Add">
+        </p>
+    </form>
+
+</div>
+
+{% endblock %}

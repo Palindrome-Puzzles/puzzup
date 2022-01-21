@@ -1,0 +1,10 @@
+<p>{{ request.user }} updated the {{ support.get_team_display }} ticket on {{ support.puzzle.name }} to {{ support.get_status_display }} (from {{old_status}}) with the below note:</p>
+
+<blockquote>{{ new_notes }}</blockquote>
+
+<p>Link to request: <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'support_by_puzzle_id' support.puzzle.id support.team %}">{{ request.scheme }}://{{ request.get_host }}{% url 'support_by_puzzle_id' support.puzzle.id support.team %}</a></p>
+
+
+<p>Old notes: </p>
+
+<blockquote>{{ old_notes }}</blockquote>

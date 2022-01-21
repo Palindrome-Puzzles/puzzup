@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Hint Report{% endblock %}
+
+{% block main %}
+<h1>Hint Report</h1>
+
+<div class="card block">
+	<div class="card-content">
+		<div class="content">
+            <table class='table classic is-fullwidth sortable'>
+                <thead>
+                    <tr>
+                        <td></td>
+                        <td>Puzzle</td>
+                        <td>Status</td>
+                        <td>Author(s)</td>
+                        <td>Editor(s)</td>
+                        <td>Hints</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for puzzle in puzzles %}
+                    <tr>
+                        <td>{{ puzzle.get_status_emoji }}</td>
+                        <td><a href="{% url 'puzzle' puzzle.id %}">{{ puzzle }}</a></td>
+                        <td>{{ puzzle.get_status_display }}</td>
+                        <td>{{ puzzle.author_list|default:"(none)" }}</td>
+                        <td>{{ puzzle.editor_list|default:"(none)" }}</td>
+                        <td>{{ puzzle.hints.all|length }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+		</div>
+	</div>
+</div>
+{% endblock %}

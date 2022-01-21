@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load user_list %}
+{% load comment_list %}
+{% load markdown %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block outer_main %}
+
+<h1>All support requests</h1>
+<form method="GET">
+    View:
+    <input type="submit" class="button is-small" name="team" value="ALL">
+    <input type="submit" class="button is-small" name="team" value="ART">
+    <input type="submit" class="button is-small" name="team" value="ACC">
+    <input type="submit" class="button is-small" name="team" value="TECH">
+</form>
+<h2>Open requests</h2>
+
+<div class="box">
+    <div class="table-container">
+        <table class="table sortable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Puzzle</th>
+                    <th>Team</th>
+                    <th>Status</th>
+                    <th>Author notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in open_requests %}
+                <tr>
+                    <td><a class='button is-small is-info' href="{% url 'support_by_puzzle_id' request.puzzle.id request.team %}">View</a></td>
+                    <td><a href="{% url 'puzzle' request.puzzle.id %}">{{ request.puzzle.name }}</a></td>
+                    <td>{{ request.get_team_display }}</td>
+                    <td>{{ request.get_status_display }}</td>
+                    <td>{{ request.author_notes|markdown|truncatechars_html:50}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<h2>Closed requests</h2>
+
+<div class="box">
+    <div class="table-container">
+        <table class="table sortable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Puzzle</th>
+                    <th>Team</th>
+                    <th>Status</th>
+                    <th>Author notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in closed_requests %}
+                <tr>
+                    <td><a class='button is-small is-info' href="{% url 'support_by_puzzle_id' request.puzzle.id request.team %}">View</a></td>
+                    <td>{{ request.puzzle.name }}</td>
+                    <td>{{ request.get_team_display }}</td>
+                    <td>{{ request.get_status_display }}</td>
+                    <td>{{ request.author_notes|truncatewords:10}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

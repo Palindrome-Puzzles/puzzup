@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Docs{% endblock %}
+
+{% block main %}
+<h1>How to use PuzzUp</h1>
+<div class="columns">
+	<div class="column is-one-fifth">
+		<h3>For everyone</h3>
+		<a href="#for-everyone">Overview</a><br>
+		<a href="#specificstatuses">Specific statuses</a><br>
+		<a href="#authoringapuzzle">Authoring a puzzle</a><br>
+		<a href="#testsolving">Testsolving</a><br>
+		<a href="#discord">Discord</a><br>
+		<h3>For editors</h3>
+		<a href="#for-editors">How to be an editor</a><br>
+		<a href="#tags">Tags</a><br>
+		{% if user.is_staff %}
+		<h3>For admins</h3>
+		<a href="#for-admins">For admins</a><br>
+		{% endif %}
+	</div>
+	<div class="column">
+
+		<div id="for-everyone" class="box">
+			{% include "docs/user.html" %}
+		</div>
+		<h2 id="for-editors">How to be an Editor</h2>
+		<div class="box">
+			{% include "docs/editor.html" %}
+		</div>
+		{% if user.is_staff %}
+		<h2 id="for-admins">How to be a superuser</h2>
+		<div class="box">
+			{% include "docs/admin.html" %}
+		</div>
+		{% endif %}
+	</div>
+
+	<div class="column is-2">
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load puzzle_list %}
+
+{% block title %}Edit Answer {{ answer.id }}{% endblock %}
+
+{% block main %}
+<a href="{% url 'rounds' %}">Back to rounds/answers</a>
+<h1>Answer {{ answer.id }}: {{ answer.answer }}</h1>
+
+<div class="block">
+	<div class="tags has-addons are-medium">
+		<span class="tag is-info">Round</span>
+		<span class="tag is-dark">{{ answer.round }}</span>
+	</div>
+</div>
+
+<div class="box">
+
+<form method="post">
+	{% csrf_token %}
+	{{ form.non_field_errors }}
+	{% for field in form.visible_fields %}
+	<div class="columns">
+		<div class="column is-one-quarter">
+			<label class="label">{{ field.label }}</label>
+		</div>
+		<div class="column">
+			<div class="control">
+				{{ field }}
+				{% if field.help_text %}
+				<p class="help">{{ field.help_text|safe }}</p>
+				{% endif %}
+				{{ field.errors }}
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+	{% for field in form.hidden_fields %}
+	{{ field }}
+	{% endfor %}
+	<input class="button is-info" type="submit" value="Submit">
+</form>
+</div>
+
+<div class="box">
+<h2>Puzzles assigned this answer:</h2>
+{% puzzle_list answer.puzzles request.user %}
+</div>
+
+<div class="box">
+<form method="post" action="/rounds">
+	{% csrf_token %}
+	Delete this answer:
+	<button class="button is-danger is-small" type="submit" name="delete_answer" value="{{ answer.id }}" class="delete-answer-button">
+		Delete
+	</button>
+</form>
+</div>
+{% endblock %}

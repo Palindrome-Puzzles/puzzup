@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Our process{% endblock %}
+
+{% block main %}
+<h1>Our process</h1>
+<div class="columns">
+	<div class="column is-one-fifth">
+		<a href="#testsolving">Testsolving</a><br>
+	</div>
+	<div class="column">
+		<div id="testsolving" class="box">
+			{% include "process/testsolving.html" %}
+		</div>
+	</div>
+	<div class="column is-2">
+	</div>
+</div>
+{% endblock %}

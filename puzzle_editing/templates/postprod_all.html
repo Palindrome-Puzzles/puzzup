@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load puzzle_list %}
+{% load user_list %}
+{% load markdown %}
+{% load humanize %}
+
+{% block title %}Postprodding{% endblock %}
+
+{% block main %}
+<h1>
+	Postprod pipeline [{{ puzzles|length }} puzzles]
+</h1>
+<p>
+<a href="{% url 'postprod' %}">🔙 to postprod landing page</a>
+</p>
+
+{% regroup puzzles by status as puzzle_groups %}
+{% for puzzle_group in puzzle_groups %}
+<div class="box">
+<h4>{{ puzzle_group.list.0.puzzle.get_status_emoji }} {{ puzzle_group.list.0.get_status_display }} [{{ puzzle_group.list|length }} puzzles]</h4>
+<div class='table-container'>
+	<table class="table is-striped classic sortable">
+		<tr align="left">
+			<th>ID/Name</th>
+			<th>Status</th>
+			<th>Postprodders</th>
+			<th>Priority</th>
+			<th>Updated</th>
+			<th>Meta</th>
+		</tr>
+		{% for puzzle in puzzle_group.list %}
+		<tr>
+			<td sorttable_customkey="{{ puzzle.id }}">{{ puzzle.html_link }}</td>
+			<td><span class="tag">{{ puzzle.get_status_emoji }} {{ puzzle.get_status_display }}</span></td>
+			<td>{% user_list puzzle.postprodders %}</td>
+			<td sorttable_customkey="{{ puzzle.priority }}"><span class="tag">{{ puzzle.get_priority_display }}</span></td>
+			<td sorttable_customkey="{{ puzzle.last_updated.timestamp }}" class="timestamp">{{ puzzle.last_updated|timesince }} ago</td>
+			<td>{% if puzzle.is_meta %}✔{% endif %}</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+</div>
+{% endfor %}
+{% endblock %}

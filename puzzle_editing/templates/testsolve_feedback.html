@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block main %}
+
+{% if bulk == False %}
+{% if no_feedback == participants %}
+<p>No feedback has been left for this session yet.</p>
+{% elif no_feedback == 0 %}
+<p>There are {{participants}} tester{{ participants|pluralize }} in this session and everyone has given feedback.</p>
+{% else %}
+<p>There are {{participants}} tester{{ participants|pluralize }} in this session and {{ no_feedback }} tester{{ no_feedback|pluralize }} {{ no_feedback|pluralize:"is,are" }} yet to give feedback.</p>
+{% endif %}
+{% endif %}
+
+{% regroup feedback by session.puzzle as puzzle_list %}
+
+{% for puzzle in puzzle_list %}
+{% if bulk == False %}
+<h2>Testsolve feedback for <a href="{% url 'puzzle' puzzle.grouper.id %}">{{ puzzle.grouper.spoilery_title }}</a></h2>
+{% endif %}
+{% regroup puzzle.list by session as session_list %}
+
+{% for session in session_list %}
+<h3>Testsolve session <a href="{% url 'testsolve_one' session.grouper.id %}">#{{ session.grouper.id }}</a> on {{ session.grouper.puzzle.name }}</h3>
+{% for part in session.list %}
+<h4>{{ part.user.credits_name }}</h4>
+<div class="columns">
+	<div class="column is-one-fifth">
+		<div class="tags has-addons are-small">
+			<span class="tag is-info">{{ part.fun_rating | floatformat }}</span>
+			<span class="tag is-dark">Fun</span>
+		</div>
+		<div class="tags has-addons are-small">
+			<span class="tag is-info">{{ part.difficulty_rating | floatformat }}</span>
+			<span class="tag is-dark">Difficulty</span>
+		</div>
+		<div class="tags has-addons are-small">
+			<span class="tag is-info">{{ part.hours_spent | floatformat }}</span>
+			<span class="tag is-dark">Hours</span>
+		</div>
+		<div class="tags has-addons are-small">
+			{% if part.technical_issues %}
+			<span class="tag is-danger">Yes</span>
+			{% else %}
+			<span class="tag is-success">No</span>
+			{% endif %}
+			<span class="tag is-dark">Tech issues?</span>
+		</div>
+		<div class="tags has-addons are-small">
+			{% if part.instructions_overall %}
+			<span class="tag is-success">Yes</span>
+			{% else %}
+			<span class="tag is-danger">No</span>
+			{% endif %}
+			<span class="tag is-dark">Instructions clear?</span>
+		</div>
+		<div class="tags has-addons are-small">
+			<span class="tag is-info">{{ part.flavortext_overall }}</span>
+			<span class="tag is-dark">Flavortext</span>
+		</div>
+		<div class="tags has-addons are-small">
+			{% if part.stuck_overall %}
+			<span class="tag is-danger">Yes</span>
+			{% else %}
+			<span class="tag is-success">No</span>
+			{% endif %}
+			<span class="tag is-dark">Got stuck?</span>
+		</div>
+	</div>
+	<div class="column">
+		<h5>Did you solve the complete puzzle or did you shortcut?</h5>
+		<p>{{ part.clues_needed|default:"No feedback provided" }}</p>
+		<h5>Enjoyable aspects</h5>
+		<p>{{ part.aspects_enjoyable|default:"No feedback provided" }}</p>
+		<h5>Unenjoyable aspects</h5>
+		<p>{{ part.aspects_unenjoyable|default:"No feedback provided" }}</p>
+		<h5>Accessibility feedback</h5>
+		<p>{{ part.aspects_accessibility|default:"No accessibility feedback" }}</p>
+		<h5>Technical issues</h5>
+		{% if part.technical_issues %}
+		<h6>Device information</h6>
+		<p>{{ part.technical_issues_device|default:"No device information provided" }}</p>
+		<h6>Issue description</h6>
+		<p>{{ part.technical_issues_description |default:"No issue description provided"}}</p>
+		{% else %}
+		<p>None.</p>
+		{% endif %}
+		<h5>Instructions</h5>
+		<p>{{ part.instructions_feedback|default:"No instructions feedback" }}</p>
+
+		<h5>Flavortext</h5>
+		<p>{{ part.flavortext_feedback|default:"No flavortext feedback" }}</p>
+
+		<h5>Stuck</h5>
+		{% if part.stuck_overall %}
+
+		<h6>Where did you get stuck?</h6>
+		<p>{{ part.stuck_points|default:"No feedback provided" }}</p>
+		<p><strong>Stuck for:</strong> {{ part.stuck_time }} hour{{ part.stuck_time|pluralize}}</p>
+		<h6>What helped you get unstuck?</h6>
+		<p>{{ part.stuck_unstuck|default:"No feedback provided" }}</p>
+
+		{% else %}
+		<p>Did not get stuck.</p>
+		{% endif %}
+
+		<h5>Errors found</h5>
+		<p>{{ part.errors_found|default:"No errors noted" }}</p>
+		<h5>Suggestions to change</h5>
+		<p>{{ part.suggestions_change|default:"No suggestions to change" }}</p>
+		<h5>Suggestions to keep</h5>
+		<p>{{ part.suggestions_keep|default:"No suggestions to keep" }}</p>
+	</div>
+</div>
+<br/>
+{% endfor %}
+{% endfor %}
+{% endfor %}
+{% endblock %}

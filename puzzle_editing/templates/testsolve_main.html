@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load puzzle_list %}
+{% load testsolve_session_list %}
+{% load user_list %}
+{% load humanize %}
+{% load markdown %}
+{% comment %} {% load card %} {% endcomment %}
+
+{% block title %}Testsolving{% endblock %}
+
+{% block main %}
+
+<h1 class="title">Testsolving</h1>
+
+<a href="{% url 'testsolve_finder' %}">Look for puzzles for a given group of people</a>
+
+<div class="box">
+	<h2>Testsolving sessions you are in</h2>
+	{% testsolve_session_list current_sessions request.user show_notes=True show_leave_button=True %}
+	<footer class="card-footer">
+		<em>If you are an author or editor on a puzzle, you will not appear in the list or count of participants.</em>
+	</footer>
+</div>
+
+<div class="box">
+	<h2>Testsolving sessions you can join</h2>
+	{% testsolve_session_list joinable_sessions request.user show_notes=True %}
+</div>
+
+<div class="box">
+	<h2>Puzzles you can testsolve</h2>
+
+	{% if testsolvable %}
+	<form method="POST">
+		{% csrf_token %}
+		<input id="hide-test-authored" type="checkbox" class="hide-test-authored" checked> <label
+			for="hide-test-authored">Hide your puzzles</label>
+		<input id="hide-test-spoiled" type="checkbox" class="hide-test-spoiled"> <label for="hide-test-spoiled">Hide
+			spoiled</label>
+		<div class="table-container">
+			<table class="classic">
+				<tr align="left">
+					<th></th>
+					<th>ID/Name</th>
+					<th>Summary</th>
+					<th>Authors</th>
+					<th>Editors</th>
+					<th>Priority</th>
+					<th>When Entered Testsolving</th>
+				</tr>
+				{% for puzzle_data in testsolvable %}
+				{% with puzzle_data.puzzle as puzzle %}
+				<tr
+					class="{% if puzzle.is_author %}test-authored{% endif %} {% if puzzle.is_spoiled %}test-spoiled{% endif %}">
+					<td>
+						<button class="button is-info" type="submit" name="start_session" value="{{ puzzle.id }}" {% if puzzle_data.warning %}
+							data-warning="{{ puzzle_data.warning }}" {% endif %}>
+							Start new session
+						</button>
+						{% if puzzle_data.warning %}
+						<div>({{ puzzle_data.warning }}!)</div>
+						{% endif %}
+					</td>
+					<td>{% if puzzle.is_spoiled %}{{ puzzle.html_link }}{% else %}{{ puzzle.html_display }}{% endif %}
+					</td>
+					<td class="small-md">{{ puzzle.summary|markdown }}</td>
+					<td>{% user_list puzzle.authors %}</td>
+					<td>{% user_list puzzle.editors %}</td>
+					<td>{{ puzzle.get_priority_display }}</td>
+					<td>{{ puzzle.status_mtime | naturaltime }}</td>
+				</tr>
+				{% endwith %}
+				{% endfor %}
+			</table>
+		</div>
+	</form>
+	{% else %}
+	<div class="empty">No puzzles to list</div>
+	{% endif %}
+</div>
+
+<div class="box">
+	<h2>Your past testsolving sessions</h2>
+	<a href="{% url 'testsolve_history' %}">View your past testsolves</a>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+	document.querySelectorAll("button[data-warning]").forEach((button) => {
+		button.addEventListener('click', (event) => {
+			if (!confirm(`We don't recommend starting a new session to testsolve this puzzle because ${button.dataset.warning}. Would you like to continue anyway?`)) {
+				event.preventDefault();
+			}
+		});
+	});
+</script>
+{% endblock %}

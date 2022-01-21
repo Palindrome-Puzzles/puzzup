@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load markdown %}
+
+{% block title %}Hints for {{ puzzle.spoiler_free_title }}{% endblock %}
+
+{% block bodyclass %}puzzle-page{% endblock %}
+
+{% block outer_main %}
+<h1 class="title">
+	Hints for {{ puzzle.spoilery_title }}
+	<a href="{% url 'puzzle' puzzle.id %}" class="edit-link">Back to the puzzle</a>
+</h1>
+
+    <div class="box">
+        <h2>Hints</h2>
+        <table class="table classic is-fullwidth">
+            <thead>
+                <tr>
+                    <td>Order</td>
+                    <td>Keywords</td>
+                    <td>Content</td>
+                    <td></td>
+                </tr>
+            </thead>
+        {% for hint in puzzle.hints.all|dictsort:"order" %}
+        <tr>
+        <td>{{ hint.order }}</td>
+        <td>{{ hint.keywords }}</td>
+        <td>{{ hint.content }}</td>
+        <td><a href="{% url 'edit_hint' hint.id %}">Edit/Delete</a></td>
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <div class="box">
+        <h2>Add hint</h2>
+        <form method="POST" id="add-hint" >
+            {% csrf_token %}
+            {{ hint_form.non_field_errors }}
+            {% for field in hint_form %}
+            <div class='columns {{ field.name }}'>
+                <div class="column is-2 {{field.field.required|yesno:"is-required," }}">
+                    {% if not field.is_hidden %}
+                    <label class="label">
+                        {{ field.label }}
+                    </label>
+                    {% endif %}
+                </div>
+                <div class="column">
+                    <div class="control">
+                        {{ field }}
+                        {{ field.errors }}
+                    </div>
+                    <p>
+                        <small>
+                            {{ field.help_text }}
+                        </small>
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class='columns {{ field.name }}'>
+                <div class="column is-offset-2">
+                    <button type="submit" class="button is-info" name="add_hint">Add this hint</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

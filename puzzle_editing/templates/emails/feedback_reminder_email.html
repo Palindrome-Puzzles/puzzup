@@ -1,0 +1,17 @@
+<p>Hello,</p>
+
+<p>It looks like you participated in a test solve for one or more puzzles but haven't left feedback yet.</p>
+
+<p>It will be very helpful to puzzle authors if you can please review the list below and <b>leave feedback</b>.</p>
+
+<p>If you joined the test solve by mistake, couldn't make it, or otherwise can't leave feedback, please <b>view</b> the testsolve session and remove yourself from it to stop receiving these reminder emails.</p>
+
+<ul>
+    {% for sess in outstanding %}
+    <li>
+        Testsolve session #{{ sess.session.id }} for <b>{{ sess.session.puzzle }}</b>: (<a href="https://lol.puzzup.lol/testsolve/{{ sess.session.id }}/finish">leave feedback</a>) (<a href="https://lol.puzzup.lol/testsolve/{{ sess.session.id }}">view</a>)
+    </li>
+    {% endfor %}
+</ul>
+
+Thanks!

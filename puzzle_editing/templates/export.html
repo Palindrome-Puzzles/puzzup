@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block main %}
+<p class="notification">
+{{ output }}
+</p>
+<form method="post" action="">
+	{% csrf_token %}
+	<p>
+	<input class="button is-info is-large" type="submit" name="export-hints" value="Export hints">
+	</p>
+	<p>
+	<input class="button is-info is-large" type="submit" name="export-metadata" value="Export metadata">
+	</p>
+	<p>
+	<input class="button is-info is-large" type="submit" name="export-both" value="Export both">
+	</p>
+</form>
+
+<br>
+
+{% endblock %}

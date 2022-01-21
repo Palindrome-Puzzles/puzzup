@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load markdown %}
+{% load name_list %}
+{% load user_list %}
+{% load avatar_list %}
+
+{% block title %}Rounds{% endblock %}
+
+{% block bodyclass %}byround{% endblock %}
+
+{% block main %}
+{% if not single_round %}
+<h1>All answers & puzzles, by round</h1>
+<p>🚨 <strong>SPOILERS BELOW</strong>. Dead and deferred puzzles not shown.</p>
+
+<div class="tabs is-centered">
+	<ul class="eic-selector">
+		<li class="is-active eic-select" data-id="all"><a href="#">All</a></li>
+		{% for eic in eics %}
+			<li class="eic-select" data-id="{{ eic.id }}"><a href="#">{{ eic.display_name|default:"No EIC" }}</a></li>
+		{% endfor %}
+	</ul>
+</div>
+
+{% else %}
+<div class="block">
+	<a href="{% url "rounds" %}">Back to all rounds</a>
+</div>
+{% endif %}
+
+{% for round in rounds %}
+<div class="columns round-row eic{{ round.editor.id }}">
+	<div class="column is-2">
+		<h2>
+			<a class="round-link" href="{% url "round" round.id %}">{{ round.name }}</a>
+		</h2>
+		<div class="tags are-medium">
+			<span class="tag is-white is-outlined">🎩 {{ round.editor.display_name }}</span>
+		</div>
+		{{ round.description|markdown }}
+	</div>
+	<div class="column">
+		<div class="box">
+			<table class="table is-narrow">
+				<tr align="left">
+					<th width="20%">Answer</th>
+					<th width="25%">Puzzle</th>
+					<th width="15%">Authors</th>
+{% comment %} 					<th width="15%">Editors</th> {% endcomment %}
+					<th width="20%">Mechanics</th>
+					<th width="5%">Status</th>
+				</tr>
+				{% for answer in round.answers %}
+					{% for puzzle in answer.puzzles %}
+						<tr class="{{ puzzle.is_meta|yesno:"meta," }}">
+							{% if forloop.first %}
+							<td class="answer" rowspan="{{ answer.puzzles|length }}">
+								{{ puzzle.is_meta|yesno:"Ⓜ️ ," }}<a href="{% url 'edit_answer' answer.id %}">{{ answer.answer }}</a>
+							</td>
+							{% endif %}
+							<td>
+								<b><a href="{% url "puzzle" puzzle.id %}">{{ puzzle.name }}</a></b>
+							</td>
+							<td class="authors">
+								{% for author in puzzle.authors.all %}{{ author.display_name }}{{ forloop.last|yesno:",&#44; "|safe }}{% endfor %}
+{% comment %} 								{% user_list puzzle.authors linkify=True %} {% endcomment %}
+								{% comment %} {% avatar_list puzzle.authors linkify=True %} {% endcomment %}
+							</td>
+{% comment %} 							<td class="editors">
+								{% user_list puzzle.editors %}
+							</td> {% endcomment %}
+							<td class="mechanics">
+								{% if puzzle.editor_notes %}{{ puzzle.editor_notes|urlizetrunc:20|markdown }}{% endif %}
+							</td>
+							{% if forloop.first %}
+							{% endif %}
+							<td>
+								<span class="tag is-medium" title="{{ puzzle.get_status_display }}">{{ puzzle.get_status_emoji }}</span>
+							</td>
+						</tr>
+					{% empty %}
+					<tr>
+						<td class="answer">
+							<a href="{% url 'edit_answer' answer.id %}">{{ answer.answer }}</a>
+						</td>
+						<td colspan="6" class="empty">--</td>
+					</tr>
+					{% endfor %}
+				{% endfor %}
+			</table>
+		</div>
+	</div>
+</div>
+{% endfor %}
+
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.eic-select a').click(function(e) {
+		e.preventDefault();
+		var li = $(this).parent('li');
+		var id = li.data('id');
+		$('.round-row').hide();
+		$('.eic-selector li').removeClass('is-active');
+		$(li).addClass('is-active')
+		if (id == "all") {
+			$('.round-row').show();
+		} else {
+			$('.round-row.eic' + id).show();
+		}
+	});
+});
+</script>
+{% endblock %}

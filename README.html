@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta charset="utf-8"/>
+</head>
+<body>
+
+<h1 id="puzzup">PuzzUp</h1>
+
+<p>A Django app for editing/testing puzzles for a puzzlehunt. Cloned from <a href="https://github.com/galacticpuzzlehunt/puzzlord">PuzzLord</a>, which was a reincarnate of <a href="https://github.com/mysteryhunt/puzzle-editing/">Puzzletron</a>.</p>
+
+<h1 id="designhowitworks">Design / How it works</h1>
+
+<p>Some goals and consequences of PuzzUp&#8217;s design:</p>
+
+<h3 id="simplicityandlowmaintenancecostswiththegoaloflettingpuzzuplastmanyyearswithoutcontinuousdevelopmenteffort">Simplicity and low maintenance costs, with the goal of letting PuzzUp last many years without continuous development effort</h3>
+
+<ul>
+<li>Few roles</li>
+<li>JavaScript dependence is minimized. When useful, use modern JS and don&#8217;t try to support old browsers.</li>
+<li>To reduce code, rely on Django built-in features when possible.</li>
+</ul>
+
+<h3 id="connectionbetweenpuzzupandhuntrepo">Connection between PuzzUp and hunt repo</h3>
+
+<ul>
+<li>Upload postprod files and commit directly to the repo</li>
+<li>Export metadata and hints directly to the hunt repo</li>
+<li>Not yet implemented: partial answers</li>
+</ul>
+
+<h3 id="permissivenesswhichdovetailswithsimplicityisokbecausewegenerallytrustourwritingteam">Permissiveness, which dovetails with simplicity, is OK because we generally trust our writing team</h3>
+
+<ul>
+<li>Anybody can change the status of puzzles and add/remove themselves or other people to/from any puzzle-related role (author, discussion editor, factchecker, postprodder, spoiled).</li>
+</ul>
+
+<h3 id="spoilersafety">Spoiler safety</h3>
+
+<ul>
+<li>Puzzles can have custom codenames, which PuzzUp will try to show to non-spoiled people.</li>
+<li>PuzzUp always shows you an interstitial and requires you to confirm that you would like to be spoiled. You cannot accidentally spoil yourself on puzzles or metas.</li>
+</ul>
+
+<h3 id="otherworkflowpoints">Other workflow points</h3>
+
+<ul>
+<li>Factchecking comes after postprodding</li>
+<li>Some additional useful puzzle statuses</li>
+</ul>
+
+<h1 id="installation">Installation</h1>
+
+<h2 id="requirements">Requirements</h2>
+
+<ul>
+<li>Python 3.x</li>
+<li>pipenv</li>
+<li>Postgres</li>
+</ul>
+
+<h2 id="localsetup">Local setup</h2>
+
+<p>Make sure you have <strong>Python 3.x</strong> and <strong>pipenv</strong> installed.</p>
+
+<p><code>cd</code> into the root of this repo</p>
+
+<p>Install the <strong>requirements</strong>:</p>
+
+<pre><code>pipenv shell
+pipenv install --dev
+</code></pre>
+
+<p>Create a folder for <strong>logs</strong> to go in:</p>
+
+<pre><code>mkdir logs
+</code></pre>
+
+<p>Duplicate <code>.env.template</code> to a file called <code>.env</code>. Change the <code>PUZZUP_SECRET</code> inside of it to something long, random, and highly secure. You can skip the other environment variables for now.</p>
+
+<p>Use Postgres to <strong>create a new database</strong>:</p>
+
+<pre><code>createdb puzzup
+</code></pre>
+
+<p><strong>Migrate</strong> by running</p>
+
+<pre><code>./manage.py makemigrations
+./manage.py migrate
+</code></pre>
+
+<p>Install pre-commit hooks (may need to <code>pip3 install pre-commit</code> first): <strong>Note: we skipped precommit in the latest implementation</strong>.</p>
+
+<pre><code>pre-commit install
+</code></pre>
+
+<p>Load user and group fixtures.</p>
+
+<pre><code>inv load-users
+</code></pre>
+
+<p>If all went well, run this to start the dev server:</p>
+
+<pre><code>./manage.py runserver
+</code></pre>
+
+<p>The local IP and port should be printed to stdout, and it should helpfully tell you that you&#8217;re running Django 3.1.x.</p>
+
+<h3 id="serverset-up">Server set-up</h3>
+
+<p>You only need to do this once, after you clone the repo and are setting it up for your team.</p>
+
+<p><strong>Set the site password</strong></p>
+
+<p><code>SITE_PASSWORD</code> as an environment variable. (This is what you will give out to users to let them register accounts)</p>
+
+<p><strong>Define the sender and reply-to email</strong></p>
+
+<p>in <code>puzzle_editing/messaging.py</code></p>
+
+<p><strong>Define the ALLOWED_HOSTS</strong></p>
+
+<p>in <code>settings/staging.py</code> and <code>settings/prod.py</code></p>
+
+<h2 id="settinguptheserver">Setting up the server</h2>
+
+<p><strong>Spin up server instance</strong> and pull latest code</p>
+
+<p>We used Heroku.</p>
+
+<p><strong>Environment vars for integrating Discord</strong></p>
+
+<ul>
+<li><code>DISCORD_APP_PUBLIC_KEY</code></li>
+<li><code>DISCORD_BOT_TOKEN</code></li>
+<li><code>DISCORD_CLIENT_ID</code></li>
+<li><code>DISCORD_CLIENT_SECRET</code></li>
+<li><code>DISCORD_GUILD_ID</code></li>
+</ul>
+
+<p><strong>Other enviornment variables</strong></p>
+
+<ul>
+<li><code>BUILDPACK_SSH_KEY</code> = for integration with Hunt site repo</li>
+<li><code>DATABASE_URL</code> = full path w/ credentials, to your DB</li>
+<li><code>DJANGO_SETTINGS_MODULE</code> = <code>settings.prod</code></li>
+<li><code>HUNT_REPO</code> = path to Hunt repo. <code>/tmp/hunt</code> works.</li>
+<li><code>POSTPROD_URL</code> = staging URl</li>
+<li><code>PUZZUP_SECRET</code> = random string</li>
+<li><code>SITE_PASSWORD</code> = needed for your users use to register</li>
+<li><code>SSH_KEY_PATH</code> = Likely <code>~/.ssh/id_rsa</code></li>
+</ul>
+
+<p><strong>Install auth fixture</strong></p>
+
+<p>If you&#8217;re using Heroku, you can use <code>inv load-all-prod</code>. Otherwise, SSH into your PuzzUp server and run <code>./manage.py loaddata auth</code>.</p>
+
+<h2 id="installingpackages">Installing packages</h2>
+
+<p>If you ever need to install more pip packages for this project, make sure you&#8217;re in the pipenv shell. Then just type</p>
+
+<pre><code>pipenv install [package-name]
+</code></pre>
+
+<p>It&#8217;ll automatically get added to the <strong>Pipfile</strong> and update <strong>Pipfile.lock</strong>.</p>
+
+<h1 id="faq">FAQ</h1>
+
+<h2 id="whyarethingsbroken">Why are things broken?</h2>
+
+<ul>
+<li>Did you forget to go into <code>pipenv shell</code></li>
+<li>Did you forget to install all the requirements?</li>
+<li>Are you running python 2? If <code>python version</code> starts with 2, you might need to install python 3, or to swap <code>python</code> to <code>python3</code> at the beginning of your commands.</li>
+</ul>
+
+<h2 id="howdoiusemanage.py">How do I use <code>manage.py</code>?</h2>
+
+<ul>
+<li>You can always run <code>python manage.py --help</code> to get a list of subcommands</li>
+<li>To create a superuser (so you can access the <code>/admin</code> page locally) run <code>python manage.py createsuperuser</code></li>
+<li>If you get a warning (red text) about making migrations run <code>python manage.py migrate</code></li>
+</ul>
+
+<h2 id="wherearethings">Where are things?</h2>
+
+<p>The Django project (currently) has only one app, called &#8220;puzzle_editing&#8221;. Most business logic and UI lives inside the <code>puzzle_editing</code> directory.</p>
+
+<h2 id="wherearestaticfiles">Where are static files?</h2>
+
+<p>Static files (CSS etc.) live in <code>puzzle_editing/static</code>.</p>
+
+<h1 id="discordintegration">Discord Integration</h1>
+
+<p>Puzzup integrates a fair bit with Discord, allowing for channels to be managed. To use it, there&#8217;s a little bit of setup. This integration should be stable through version 8 of the Discord API.</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>You will need to create a <a href="https://discord.com/developers/applications">Discord application here</a>.</p>
+
+<ul>
+<li>Set this application&#8217;s <strong>Interactions endpoint URL</strong> to <code>https://your-puzzup-url/slashcommands</code></li>
+<li>Enable a bot for your application.</li>
+</ul>
+
+<p>Make a note of:</p>
+
+<ul>
+<li>your discord server ID (you can switch on Developer Mode and the right-click &gt; Copy ID to do this; called a guild ID below)</li>
+<li>your bot&#8217;s bot token</li>
+<li>your application&#8217;s public key</li>
+<li>your application&#8217;s client ID</li>
+<li>your application&#8217;s client secret</li>
+</ul>
+
+<p>Set necessary <strong>Discord environment variables</strong>. See above.</p>
+
+<p>By default, <code>DISCORD_OAUTH_SCOPES</code> is set to <code>identify</code> only, since that is all the site needs at this time.</p>
+
+<p>You&#8217;ll need to add a bot to your server with the following permissions - the below link will do this for you, just add your client ID:</p>
+
+<pre><code>https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&amp;permissions=268438544&amp;scope=applications.commands%20bot
+</code></pre>
+
+<ul>
+<li>Manage channels - needed to rename, create and reorganise channels</li>
+<li>Manage roles - needed to override visibility for users and roles on puzzle channels</li>
+<li>Commands - needed for your users to be able to invoke the below slash commands</li>
+</ul>
+
+<p>Finally, make a <code>POST</code> request to <code>https://discord.com/api/v8/applications/YOUR_APPLICATION_CLIENT_ID/guilds/YOUR_GUILD_ID/commands</code> with the below JSON payload, authorised with your bot token (Authorization: Bot BOT_TOKEN)</p>
+
+<p>Alternately, you can instead make the <code>POST</code> request to <code>https://discord.com/api/v8/applications/YOUR_APPLICATION_CLIENT_ID/commands</code> and then wait up to an hour for commands to propagate. This will enable your commands globally, but there&#8217;s really no need for this.</p>
+
+<pre><code class="json">    {
+        &quot;name&quot;: &quot;up&quot;,
+        &quot;description&quot;: &quot;Interact with Puzzup&quot;,
+        &quot;options&quot;: [{
+            &quot;type&quot;: 1,
+            &quot;name&quot;: &quot;create&quot;,
+            &quot;description&quot;: &quot;Create a puzzle in Puzzup linked to the current channel&quot;
+        },{
+            &quot;type&quot;: 1,
+            &quot;name&quot;: &quot;archive&quot;,
+            &quot;description&quot;: &quot;Archive the current channel&quot;
+        },{
+            &quot;type&quot;: 1,
+            &quot;name&quot;: &quot;info&quot;,
+            &quot;description&quot;: &quot;Get information about the current channel's puzzle&quot;
+        },{
+            &quot;type&quot;: 1,
+            &quot;name&quot;: &quot;url&quot;,
+            &quot;description&quot;: &quot;Get the link for the current channel's puzzle&quot;
+        }
+        ]
+    }
+</code></pre>
+
+<h1 id="credits">Credits</h1>
+
+<p>Forked from <a href="https://github.com/galacticpuzzlehunt/puzzlord">PuzzLord</a>, which is maintained by <a href="https://github.com/betaveros">@betaveros</a>. Lots of infrastructure by <a href="https://github.com/mitchgu">@mitchgu</a>. Many contributions from <a href="https://github.com/jakob223">@jakob223</a>, <a href="https://github.com/dvorak42">@dvorak42</a>, and <a href="https://github.com/fortenforge">@fortenforge</a>.</p>
+
+<p>UI reskin by <a href="https://github.com/santheo">Sandy Weisz</a>. Lots of work by Discord improvements by <a href="https://github.com/jimsug">James Sugrono</a>.</p>
+
+<p>Contains a lightly modified copy of <a href="https://kryogenix.org/code/browser/sorttable/">sorttable.js</a>, licensed under the X11 license.</p>
+
+</body>
+</html>
+

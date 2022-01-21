@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load user_list %}
+
+{% block title %}Edit {{ other_credit.get_credit_type_display }} credit for {{ puzzle.spoiler_free_title }}{% endblock %}
+
+{% block outer_main %}
+<h3>Edit {{ other_credit.get_credit_type_display }} credit for <a href="{% url 'puzzle' puzzle.id %}">{{ puzzle.spoiler_free_title }}</a></h3>
+
+    <p>
+        Back to <a href="{% url 'puzzle_other_credits' puzzle.id %}">all credits</a>
+    </p>
+<div class="box">
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in other_credit_form.hidden_fields %}
+        {{ field }}
+        {% endfor %}
+        {% for field in other_credit_form.visible_fields %}
+        <p>
+        {{ field.label }}
+        <br/>
+        {{ field }}
+        </p>
+        {% endfor %}
+        <p class="alert">Please select Puzzup users where possible. If you enter free text in the <strong>Text</strong> field above, any users selected will be ignored.</p>
+        <p>
+            <input type="submit" class="button is-primary" value="Update">
+            <input type="submit" class="button" value="Delete" name="delete_oc">
+        </p>
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+<p>
+<b><a href="{{ request.scheme }}://{{ request.get_host }}{% url 'puzzle' puzzle.id %}">{{ puzzle.spoiler_free_title }}</a></b>
+<br>
+is now <b>{{ status }}</b>
+<br>
+status set by {{ user.display_name }}
+</p>
+
+<p>
+<b>- - -🚨 SPOILERS AHEAD - - -</b>
+</p>
+
+<p>
+<b>Requests:</b><br>{{ puzzle.notes }}
+</p>
+<p>
+<b>Mechanics:</b><br>{{ puzzle.editor_notes }}
+</p>
+<p>
+<b>Description:</b><br>{{ puzzle.description }}
+</p>

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load puzzle_list %}
+{% load testsolve_session_list %}
+{% load markdown %}
+{% block main %}
+<h1 class="title">Welcome to PuzzUp!</h1>
+{% if announcement %}{{ announcement|markdown }}{% endif %}
+
+{% if blocked_on_editor_puzzles %}
+<div class="box">
+    <p class="title is-4"><p class="title is-4">Your queue as editor</p>
+    <div class="content">
+        {% puzzle_list blocked_on_editor_puzzles request.user with_new_link=True %}
+    </div>
+</div>
+{% endif %}
+
+<div class="box">
+    <p class="title is-4">Testsolving sessions you are in</p>
+    {% testsolve_session_list current_sessions request.user show_notes=True show_leave_button=True %}
+</div>
+
+<div class="box">
+    <p class="title is-4">Puzzles you are factchecking</p>
+    {% puzzle_list factchecking request.user %}
+</div>
+
+<div class="box">
+    <p class="title is-4">Puzzles you are postprodding</p>
+    {% puzzle_list postprodding request.user %}
+</div>
+
+    {% if inbox_puzzles %}
+    <div class="card block">
+        <div class="card-content">
+            <div class="media">
+                <div class="media-content">
+                    <p class="title is-4">Unread spoiled puzzles</p>
+                </div>
+            </div>
+            <div class="content">
+                {% puzzle_list inbox_puzzles request.user %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card block">
+        <div class="card-content">
+            <p class="title is-4">Your queue</p>
+            <div class="content">
+                {% puzzle_list blocked_on_author_puzzles request.user with_new_link=True %}
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a class="card-footer-item" href="{% url 'authored' %}">See all of your puzzles</a>
+        </footer>
+    </div>
+</div>
+
+{% endblock %}

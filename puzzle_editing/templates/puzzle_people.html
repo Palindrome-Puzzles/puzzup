@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ puzzle.spoiler_free_title }} / People{% endblock %}
+
+{% block main %}
+<h1>People for <a href="{% url "puzzle" puzzle.id %}">{{ puzzle.name }}</a></h1>
+<form method="post">
+{% csrf_token %}
+
+{% for field in form %}
+<div class="columns">
+	<div class="column is-one-quarter">
+		<label class="label">{{ field.label }}</label>
+	</div>
+	<div class="column">
+		<div class="control">
+			{{ field }}
+			{% if field.help_text %}
+			<p class="help">{{ field.help_text|safe }}</p>
+			{% endif %}
+			{{ field.errors }}
+		</div>
+		<br>
+		<input class="button is-primary" type="submit" value="Submit">
+
+	</div>
+</div>
+{% endfor %}
+
+
+<div class="columns">
+	<div class="column is-one-quarter">
+	</div>
+	<div class="column">
+		<input class="button is-primary" type="submit" value="Submit">
+	</div>
+</div>
+</form>
+{% endblock %}

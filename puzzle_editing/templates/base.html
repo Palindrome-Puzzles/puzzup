@@ -1,0 +1,285 @@
+{% load static %}
+{% load countdown %}
+{% load nav_link %}
+<!DOCTYPE html>
+<html lang="en" class="has-navbar-fixed-top">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css" />
+		<link rel="stylesheet" href="{% static "css/screen.css" %}">
+		<link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<title>{% block title %}PuzzUp{% endblock %}</title>
+		{% block extrahead %}{% endblock %}
+	</head>
+	<body class="{% block bodyclass %}{% endblock %}">
+		<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+		{% with request.path as current_path %}
+		  <div class="navbar-brand">
+			<a class="navbar-item" href="/">
+			  ⏫
+			</a>
+
+			<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+			  <span aria-hidden="true"></span>
+			  <span aria-hidden="true"></span>
+			  <span aria-hidden="true"></span>
+			</a>
+		  </div>
+
+		  <div id="navbarBasicExample" class="navbar-menu">
+			<div class="navbar-start">
+				{% nav_link current_path 'authored' '✋🏽 Yours' %}
+				<div class="navbar-item has-dropdown is-hoverable">
+					<a class="navbar-link">
+					  🤔 Puzzles
+					</a>
+					<div class="navbar-dropdown">
+						{% nav_link current_path 'byround' '📚 Grouped by round' %}
+						{% nav_link current_path 'bystatus' '📍 Grouped by status' %}
+						{% nav_link current_path 'all' '🌎 All in one list' %}
+					</div>
+				 </div>
+				{% if perms.puzzle_editing.change_round %}
+				<div class="navbar-item has-dropdown is-hoverable">
+					<a class="navbar-link">
+					  👒 Editors
+					</a>
+					<div class="navbar-dropdown">
+						{% nav_link current_path 'eic' '🎩 Editors-In-Chief inbox' %}
+						{% nav_link current_path 'triage' '🩺 EIC triage' %}
+						{% nav_link current_path 'editor_overview' '👁 Editor overview' %}
+					    <hr class="navbar-divider">
+						{% nav_link current_path 'byround_eic' '🌍 All answers & puzzles, by round' %}
+						{% nav_link current_path 'rounds' '➕ Add rounds or answers' %}
+					    <hr class="navbar-divider">
+						{% nav_link current_path 'tags' '🏷 Tags' %}
+					</div>
+				 </div>
+				{% endif %}
+				<div class="navbar-item has-dropdown is-hoverable">
+					<a class="navbar-link">
+					  🪵 Postprod
+					</a>
+					<div class="navbar-dropdown">
+						{% nav_link current_path 'postprod' '🪵 Dashboard' %}
+						{% nav_link current_path 'postprod_all' '🏠 Pipeline' %}
+					</div>
+				</div>
+    			{% nav_link current_path 'testsolve_main' '✏️ Testsolve' %}
+				{% nav_link current_path 'puzzle_new' '➕ Add' %}
+
+				<div class="navbar-item">
+					{% countdown %}
+				</div>
+			  <div class="navbar-item has-dropdown is-hoverable">
+				<a class="navbar-link">
+				  More
+				</a>
+
+				<div class="navbar-dropdown">
+						{% nav_link current_path 'my_spoiled' '🔦 My spoiled puzzles' %}
+						{% nav_link current_path 'random_answers' '🎲 Random answers' %}
+						{% nav_link current_path 'all_answers' '👀 Available answers' %}
+						{% nav_link current_path 'all_hints' '🪙 Hint report' %}
+				    <hr class="navbar-divider">
+						{% nav_link current_path 'all_support' '⛑ Support' %}
+				    <hr class="navbar-divider">
+					{% nav_link current_path 'process' "Our process" %}
+					{% nav_link current_path 'docs' 'How to use PuzzUp' %}
+				    <hr class="navbar-divider">
+					{% nav_link current_path 'users' 'Users' %}
+					{% nav_link current_path 'factcheck' 'Factcheck' %}
+					{% nav_link current_path 'statistics' 'Statistics' %}
+				</div>
+			  </div>
+			</div>
+
+			<div class="navbar-end">
+			  <div class="navbar-item">
+				{% if request.user.is_authenticated %}
+					{{ request.user.discord_user_id|yesno:",⚠️ " }}
+					<a href="{% url 'account' %}">{{ user.hat }} {{ request.user.display_name }}</a>
+				{% else %}
+					<div class="buttons">
+						<a class="button is-info" href="{% url 'login' %}">
+							<strong>Login</strong>
+						</a>
+						<a class="button is-info" href="{% url 'register' %}">
+							<strong>Sign up</strong>
+						</a>
+					</div>
+				{% endif %}
+			  </div>
+			</div>
+		  </div>
+
+			{% endwith %}
+		</nav>
+			{% comment %} <div class="nav-second">
+				<select id="theme" class="theme">
+					<option value="classic">classic</option>
+					<option value="dark">dark</option>
+					<option value="neopets">neopets</option>
+					<option value="jellybeans">jellybeans</option>
+					<option value="solarized">solarized</option>
+					<option value="flamewyrm">flamewyrm</option>
+				</select>
+			</div> {% endcomment %}
+
+
+		<div class="container content">
+		{% block outer_main %}
+		<main>
+			{% block main %}{% endblock %}
+		</main>
+		{% endblock %}
+		</div>
+
+		<script type="text/javascript">
+
+		document.addEventListener('DOMContentLoaded', () => {
+
+			  // Get all "navbar-burger" elements
+			  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+			  // Check if there are any navbar burgers
+			  if ($navbarBurgers.length > 0) {
+
+				// Add a click event on each of them
+				$navbarBurgers.forEach( el => {
+				  el.addEventListener('click', () => {
+
+					// Get the target from the "data-target" attribute
+					const target = el.dataset.target;
+					const $target = document.getElementById(target);
+
+					// Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+					el.classList.toggle('is-active');
+					$target.classList.toggle('is-active');
+
+				  });
+				});
+			  }
+
+			});
+
+			document.querySelectorAll(".toggle-show").forEach((node) => {
+				const target = document.getElementById(node.dataset.target);
+				node.addEventListener('click', () => {
+					if (target.classList.contains('hidden')) {
+						target.classList.remove('hidden');
+						node.dataset.reshow = node.innerText;
+						node.innerText = node.dataset.rehide;
+					} else {
+						target.classList.add('hidden');
+						node.innerText = node.dataset.reshow;
+					}
+				});
+			});
+
+			// const currentTheme = localStorage.getItem("theme") || "classic";
+			// document.documentElement.setAttribute('data-theme', currentTheme);
+			// const themeSelect = document.getElementById("theme");
+			// themeSelect.value = currentTheme;
+			// themeSelect.addEventListener("change", (event) => {
+			// 	const value = event.target.value;
+			// 	document.documentElement.setAttribute('data-theme', value);
+			// 	localStorage.setItem("theme", value);
+			// });
+
+			// const navMenu = document.getElementById('nav-menu');
+			// navMenu.classList.add('nav-menu-collapsed'); // by default but not if JS
+			// document.getElementById('menu-button').addEventListener('click', (event) => {
+			// 	if (navMenu.classList.contains('nav-menu-collapsed')) {
+			// 		navMenu.classList.remove('nav-menu-collapsed');
+			// 	} else {
+			// 		navMenu.classList.add('nav-menu-collapsed');
+			// 	}
+			// });
+
+			// commenting this out so we can use nice 'timesince' dates
+			// document.querySelectorAll(".timestamp").forEach((node) => {
+			// 	// thanks, canada
+			// 	node.textContent = new Date(Number(node.dataset.timestamp) * 1000).toLocaleString('en-CA');
+			// 	node.setAttribute('title', 'Automatically converted to your time zone');
+			// });
+
+			document.querySelectorAll('.markdown-preview-toggle').forEach((node) => {
+				const textarea = node.parentNode.nextSibling;
+				const preview = textarea.nextSibling;
+				console.log(textarea);
+				console.log(preview);
+
+				node.addEventListener('click', () => {
+					if (preview.classList.contains('hidden')) {
+						preview.classList.remove('hidden');
+						textarea.classList.add('hidden');
+
+						preview.textContent = "Loading...";
+
+						fetch('/preview_markdown', {
+							method: 'POST',
+							body: textarea.value,
+						}).then((response) => response.json()).then((json) => {
+							console.log(json);
+							if (json.success) {
+								preview.innerHTML = json.output;
+							} else {
+								preview.textContent = "Error: " + json.error;
+							}
+						}).catch((error) => {
+							preview.textContent = "Error: " + error;
+						});
+					} else {
+						textarea.classList.remove('hidden');
+						preview.classList.add('hidden');
+					}
+				});
+			});
+
+			document.querySelectorAll('.user-checkbox-select-multiple').forEach((node) => {
+				const textbox = node.firstChild;
+				const display = textbox.nextSibling;
+				const list = display.nextSibling;
+
+				textbox.value = "";
+
+				const handler = () => {
+					let query = textbox.value.toLowerCase();
+					let total = 0;
+					let shown = 0;
+					list.querySelectorAll('.user-option').forEach((node) => {
+						total++;
+						if (node.textContent.toLowerCase().indexOf(query) !== -1) {
+							shown++;
+							node.classList.remove('hidden');
+						} else {
+							node.classList.add('hidden');
+						}
+					});
+					if (shown === total) {
+						display.textContent = "";
+					} else {
+						display.textContent = `Showing ${shown} of ${total}`;
+					}
+				};
+
+				textbox.addEventListener('change', handler);
+				textbox.addEventListener('keyup', handler);
+			});
+
+			// This is hacky but I couldn't figure out how to do it in the markdown engine
+			var links = document.links;
+
+			for (var i = 0, linksLength = links.length; i < linksLength; i++) {
+			if (links[i].hostname != window.location.hostname) {
+				links[i].target = '_blank';
+			}
+			}
+		</script>
+		<script src="{% static 'sorttable.js' %}"></script>
+		{% block extrajs %}{% endblock %}
+	</body>
+</html>

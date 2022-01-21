@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block bodyclass %}awaiting-editor{% endblock %}
+
+{% block title %}Editors-In-Chief inbox{% endblock %}
+
+{% block main %}
+
+<p>🚨 SPOILERS BELOW</p>
+
+{% include "_editor_list.html" with puzzles=awaiting_eic title="🎩 Awaiting Approval by EIC" %}
+{% include "_editor_list.html" with puzzles=needs_discussion title="🗣 Needs Discussion" %}
+{% include "_editor_list.html" with puzzles=waiting_for_round title="⏳ Waiting For Round" %}
+{% include "_editor_list.html" with puzzles=awaiting_answer title="🤷🏽‍♀️ Awaiting Answer Assignment" %}
+
+{% endblock %}

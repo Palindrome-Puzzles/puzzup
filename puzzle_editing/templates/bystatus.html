@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load name_list %}
+{% load markdown %}
+
+{% block bodyclass %}eic{% endblock %}
+
+{% block title %}All Puzzles{% endblock %}
+
+{% block main %}
+<h1>All Puzzles by Status</h1>
+
+{% regroup puzzles by status as puzzle_groups %}
+{% for puzzle_group in puzzle_groups %}
+<div class="box">
+<h4>{{ puzzle_group.list.0.status }} [{{ puzzle_group.list|length }} puzzles]</h4>
+<div class='table-container'>
+	<table class="table is-striped classic sortable">
+		<tr align="left">
+			<th>ID/Name</th>
+			<th>Authors</th>
+			<th>Priority</th>
+			<th>Updated</th>
+			<th>Meta</th>
+		</tr>
+		{% for puzzle_obj in puzzle_group.list %}
+		<tr>
+			<td sorttable_customkey="{{ puzzle_obj.puzzle.id }}">{{ puzzle_obj.puzzle.id }}: {{ puzzle_obj.puzzle.html_link_no_tags }}</td>
+			<td>{% for author in puzzle_obj.puzzle.authors.all %}{{ author.display_name }}{{ forloop.last|yesno:",&#44; "|safe }}{% endfor %}</td>
+			<td sorttable_customkey="{{ puzzle_obj.puzzle.priority }}"><span class="tag">{{ puzzle_obj.puzzle.get_priority_display }}</span></td>
+			<td sorttable_customkey="{{ puzzle_obj.puzzle.last_updated.timestamp }}" class="timestamp">{{ puzzle_obj.puzzle.last_updated|timesince }} ago</td>
+			<td>{% if puzzle_obj.puzzle.is_meta %}✔{% endif %}</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+</div>
+{% endfor %}
+
+{% comment %}
+
+{% regroup puzzles by status as status_groups %}
+{% for status_group in status_groups %}
+<div class="columns">
+<div class="column is-2">
+	<h3>{{ status_group.grouper }}</h3>
+	{{ status_group.list|length }} puzzle{{ status_group.list|pluralize }}
+</div>
+<div class="column">
+	{% for obj in status_group.list %}
+		<div class="message is-small {% if obj.answers|length > 0 %}assigned{% endif %}">
+			<div class="message-header">
+				<span class="is-size-6">
+				{{ obj.puzzle.html_link }}
+				</span>
+				<span>
+				by
+				{% for author in obj.authors %}
+				<a href="{% url "user" author.username %}">{{ author.display_name }}</a>
+				{% endfor %}
+				</span>
+			</div>
+
+			<div class="message-body">
+				<div class="columns">
+					<div class="column is-two-thirds">
+						{{ obj.puzzle.summary|urlizetrunc:30|markdown }}
+					</div>
+					<div class="column is-small">
+					</div>
+				</div>
+			</div>
+	</div>
+	{% endfor %}
+</div>
+</div>
+{% endfor %}
+ {% endcomment %}
+{% endblock %}

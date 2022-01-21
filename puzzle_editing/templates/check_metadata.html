@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="box">
+<h2>Mismatched slug</h2>
+<table>
+<tr>
+	<th>Link to postprod page</th>
+	<th>Current slug</th>
+	<th>Slug in file</th>
+</tr>
+{% for puzzle in mismatches %}
+<tr>
+<td><a href="{% url 'puzzle_postprod' puzzle.id %}">{{ puzzle }}</a></td>
+<td>{{ puzzle.postprod.slug }}</td>
+<td>{{ puzzle.slug_in_file }}</td>
+{% endfor %}
+</tr>
+</table>
+</div>
+
+<div class="box">
+<h2>Credits diff</h2>
+<table>
+<tr>
+	<th>Link</th>
+	<th>New credits</th>
+	<th>Credits in file</th>
+</tr>
+{% for puzzle in credits_mismatches %}
+<tr>
+<td><a href="{% url 'puzzle_edit' puzzle.id %}">{{ puzzle }}</a></td>
+<td>{{ puzzle.metadata_credits }}</td>
+<td>{{ puzzle.credits_in_file }}</td>
+{% endfor %}
+</tr>
+</table>
+</div>
+
+
+<div class="box">
+<h2>Metadata file is missing</h2>
+{% for puzzle in notfound %}
+{{ puzzle }}<br>
+{% endfor %}
+</div>
+
+<div class="box">
+<h2>Something else happened</h2>
+{% for puzzle in exceptions %}
+{{ puzzle }}<br>
+{% endfor %}
+</div>
+
+{% endblock %}

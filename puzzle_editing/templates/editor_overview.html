@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Editor Overview{% endblock %}
+
+{% block main %}
+
+<h1 class='title'>
+    Editor Overview
+</h1>
+
+<div class='table-container'>
+    <table class='table is-striped is-fullwidth'>
+        <thead>
+            <tr>
+                <th>Puzzle</th>
+                {% for ed in editors %}
+                <th>
+                {{ ed.hat }} {{ ed.display_name }}
+                </th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>Total Editing</th>
+                {% for ed in editors %}
+                    <th>{{ ed.num_editing }}</th>
+                {% endfor %}
+            </tr>
+            <tr class="is-selected">
+                <th>Actively Editing</th>
+                {% for ed in actively_editing %}
+                    <th>{{ ed|last }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% regroup editored_puzzles by status as puzzle_list %}
+            {% for status in puzzle_list %}
+            <tr><td>{{ status.grouper }}</td>{% for ed in editors %}<td></td>{% endfor %}</tr>
+            {% for p in status.list %}
+            <tr>
+                <td>
+                    <a href="{% url 'puzzle' p.id %}">
+                        {{ p.name }}
+                    </a>
+                </td>
+                {% for ed in p.editors %}
+                <td>
+                {% if ed == 1 %}
+                ✔
+                {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

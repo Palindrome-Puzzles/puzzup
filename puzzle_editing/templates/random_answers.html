@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load puzzle_list %}
+{% load markdown %}
+
+{% block title %}Random Answers{% endblock %}
+
+{% block main %}
+<h1>See Random Answers</h1>
+<div class="columns">
+
+    <div class="column is-one-quarter">
+        <p>Refresh if you want to see more choices. If you're looking for an answer for a particular concept, you should talk to an editor and have them help you find the best answer. Some answers can be changed to accommodate a particular puzzle idea.</p>
+    </div>
+
+    <div class="column is-three-quarters">
+        <div class="box">
+            <input type="checkbox" class="unhide" id="unhide"><label for="unhide">Unhide all</label>
+            <div class='table-container'>
+            <table>
+                <thead>
+                    <td>Round</td><td>Answer (hover to reveal)</td><td>Notes</td>
+                </thead>
+                {% for answer in answers %}
+                <tr class="answerspoiler"><th>{{answer.round}}</th><td>{{answer}}</td><td>{{answer.notes}}</td></tr>
+                {% endfor %}
+            </table>
+            </div>
+            <p>
+                <strong>To claim an answer:</strong>
+                Make a new puzzle, and mention in the notes which answer you'd like. Then click "Ready for an editor". An editor-in-chief will claim an answer for you and assign it to your new puzzle.
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .answerspoiler {
+        color: black;
+        background-color: black;
+        padding: 3px;
+    }
+    .answerspoiler:hover, .unhide:checked + label + div > table .answerspoiler  {
+        color:white;
+        background-color: #333;
+    }
+    .answerspoiler > th{
+        color:white;
+        background-color: #f8f8cc;
+    }
+    table {
+        border-spacing: 5px 20px;
+    }
+</style>
+{% endblock %}

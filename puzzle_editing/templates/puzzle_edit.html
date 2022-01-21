@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load markdown %}
+
+{% block title %}{{ puzzle.spoiler_free_title }} / Edit{% endblock %}
+
+{% block main %}
+<a href="{% url 'puzzle' puzzle.id %}">🔙 to {{ puzzle }}</a>
+<h1>Edit {{ puzzle }}</h1>
+{% if spoiled %}
+	<form method="post">
+	{% csrf_token %}
+	{% for field in form %}
+	<div class="columns">
+		<div class="column is-one-third">
+			<label class="label">{{ field.label }}</label>
+			<div class="help">{{ field.help_text|safe|markdown }}</div>
+		</div>
+		<div class="column">
+			<div class="control">
+				{{ field }}
+				{{ field.errors }}
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+
+	<div class="columns">
+		<div class="column is-one-third">
+		</div>
+		<div class="column">
+			<input class="button is-primary" type="submit" value="Submit">
+		</div>
+	</div>
+	</form>
+{% else %}
+	<p>You are not spoiled on this puzzle! Why are you trying to edit it?</p>
+	<p>If you really want to, you can click back to it and spoil yourself.</p>
+{% endif %}
+{% endblock %}

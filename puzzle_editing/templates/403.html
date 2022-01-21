@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}403: Permissions missing{% endblock %}
+{% block main %}
+<h1>403: Permissions missing</h1>
+<p>You don't have access to this page - you tried to access <code><a href="{{ request.get_full_path }}">{{ request.get_full_path }}</a></code></p>
+<p>Contact an admin if you need access</p>
+{% endblock %}

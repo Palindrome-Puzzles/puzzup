@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load markdown %}
+{% load name_list %}
+
+{% block title %}All available answers{% endblock %}
+
+{% block bodyclass %}answers{% endblock %}
+
+{% block main %}
+<h1>All available answers</h1>
+
+<p>Showing all answers, including ones already requested. If you'd prefer to only see a few possible answers at a time, visit the <a href="{% url 'random_answers' %}">🎲 Random Answers</a> page.</p>
+<p><strong>To request an answer, add it to the NOTES section of your puzzle here on PU.</strong></p>
+
+<input id="hide-assigned-to-other" type="checkbox" class="hide-assigned-to-other ui-only" checked> <label for="hide-assigned-to-other">Hide answers assigned to other puzzles</label>
+
+<br><br>
+
+<div class="all-rounds">
+{% for round in rounds %}
+<div class="columns">
+	<div class="column is-2">
+		<h2>{{ round.name }}</h2>
+		<div class="tags are-medium">
+			<span class="tag is-white is-outlined">🎩 {{ round.editors|name_list }}</span>
+		</div>
+	</div>
+	<div class="column">
+		<div class="box">
+			{% if round.spoiled %}
+			{{ round.description|markdown }}
+			<table class="classic">
+				<tr align="left">
+					<th>Answer</th>
+					<th>Requested by…</th>
+					<th>Notes</th>
+				</tr>
+				{% for answer in round.answers %}
+					<tr class="{% if answer.puzzles|length > 0 %}assigned-to-other{% endif %}">
+						<td class="answer">{{ answer.answer }}</td>
+						<td>
+							{% for puzzle in answer.puzzles %}
+							<a href="{% url "puzzle" puzzle.id %}" title="{{ puzzle.spoiler_free_name }}">🧩</a>
+							{% empty %}
+							--
+							{% endfor %}
+						</td>
+						<td class="small-md">
+							{% if answer.notes %}{{ answer.notes|markdown }}{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</table>
+			{% else %}
+			<p>
+				<i>Description and {{ round.answers|length }} answer{{ round.answers|length|pluralize }} hidden.</i>
+			</p>
+			<form method="post">
+				{% csrf_token %}
+				<button type="submit" class="button is-warning" name="spoil_on" value="{{ round.id }}">Spoil me</button>
+			</form>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endfor %}
+</div>
+
+{% endblock %}
